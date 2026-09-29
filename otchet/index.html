@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Revit для инженера ОВиК: плагины и ИИ</title>
+<style>
+:root{--bg:#f6f7f5;--fg:#1d2420;--muted:#5b665f;--card:#ffffff;--line:#d5dad6;--link:#1f6b4a;--th:#e9eee9;--zebra:#f3f6f3;--code:#eef1ee}
+@media (prefers-color-scheme:dark){:root{--bg:#141a17;--fg:#e4e9e5;--muted:#9aa69e;--card:#1b231f;--line:#37423b;--link:#7fd0a6;--th:#232d27;--zebra:#1e2722;--code:#232d27}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;padding:32px 16px 64px;background:var(--bg);color:var(--fg);font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+main{max-width:760px;margin:0 auto}
+h1{font-size:1.9rem;line-height:1.25;margin:0 0 .4em}
+h2{font-size:1.4rem;line-height:1.3;margin:2.2em 0 .6em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;line-height:1.35;margin:1.6em 0 .5em}
+p{margin:0 0 1em}
+.date{color:var(--muted);font-size:.95rem;margin-bottom:1.6em}
+a{color:var(--link);text-underline-offset:2px;overflow-wrap:anywhere}
+a:hover{text-decoration-thickness:2px}
+strong{font-weight:650}
+ul,ol{padding-left:1.3em;margin:0 0 1em}
+li{margin:.25em 0}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 1.4em;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.tw:focus{outline:2px solid var(--link);outline-offset:2px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.88rem;line-height:1.45}
+th,td{border:1px solid var(--line);padding:.5em .65em;text-align:left;vertical-align:top}
+th{background:var(--th);font-weight:650;white-space:nowrap}
+tbody tr:nth-child(even){background:var(--zebra)}
+td a{word-break:break-word}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{margin-top:3em;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:1em}
+@media (max-width:600px){body{padding:16px 16px 48px;font-size:16px}h1{font-size:1.55rem}h2{font-size:1.25rem}}
+@media print{body{background:#fff;color:#000}.tw{overflow:visible}}
+</style>
+</head>
+<body>
+<main>
+<h1>Плагины считают по СП, ИИ разгребает рутину</h1>
+<p class="date">Исследование от 29.09.2026</p>
+<p>Из двенадцати пунктов присланного обзора инженеру-проектировщику ОВиК по-настоящему нужны три. Это MagiCAD (расчёты воздуховодов и труб плюс огромные каталоги оборудования), pyRevit (бесплатный плагин, то есть дополнение, встраиваемое в Revit; в нём запускаются маленькие программы-скрипты) и отчасти DiRoots One (массовая правка параметров и обмен с Excel). Всё остальное — генераторы архитектурных планировок, красивая визуализация и помощники на основе искусственного интеллекта (ИИ) для оформления чертежей. Таблица «ускорение в 3–5 раз, качество 100 % без ошибок» не опирается ни на один найденный источник: независимая оценка даёт <strong>2–3 раза, и только на отдельных повторяющихся операциях</strong>. Часть обзора просто устарела: модель Claude 3.5 Sonnet выведена из работы <strong>28.10.2025</strong>, а Revit 2027 требует для плагинов технической платформы Microsoft .NET 10, а не .NET 8 (на этой платформе собираются плагины; собранный под одну версию не запустится в другой). Главный выигрыш ОВиК-инженеру сегодня дают не «умные» помощники, а три приземлённые вещи. Первая — российские расчётные плагины, считающие по СП: встроенные расчёты Revit сделаны по американской методике и для экспертизы не годятся. Вторая — порядок в шаблоне и параметрах, из которого спецификации по ГОСТ собираются почти автоматически. Третья — автоматизация заданий на отверстия. ИИ в 2026 году полезен как «программист на подхвате», который за вечер пишет небольшой скрипт выгрузки или заполнения параметров, и как собеседник, отвечающий на вопросы о модели. Доверять ему расчёт воздухообмена, аэродинамики или гидравлики нельзя, а право менять модель ему дают только на копии файла и с проверкой каждого шага. И всё это приходится примерять к российской реальности. С <strong>20.03.2024</strong> Autodesk запретил российским компаниям пользоваться своими продуктами, Revit блокируется при выходе в интернет, MagiCAD в Россию не поставляется, а зарубежные ИИ-помощники Claude и ChatGPT официально не обслуживают пользователей из России. Поэтому практический план в конце начинается с правового вопроса. Он построен так, чтобы вложения не пропали при переходе на отечественные nanoCAD BIM, Model Studio CS или Renga: порядок в параметрах, умение выгружать модель в открытый формат IFC (общий «язык» обмена моделями между программами разных производителей, как PDF для документов), логика скриптов и привычка перепроверять расчёты.</p>
+<h2>Из двенадцати пунктов обзора ОВиК-инженеру нужны три</h2>
+<p>Присланный обзор написан скорее для архитектора, чем для инженера систем. Из двенадцати позиций шесть — Veras, Enscape и Lumion, Finch 3D, Planfinder, WiseBIM, Autodesk Forma — касаются формы здания, планировок и картинок, а к воздуховодам, трубам и расчётам отношения не имеют. Здесь и дальше «плагин» (или «надстройка») — дополнительная программа, которая встраивается в Revit и добавляет в его ленту новые кнопки. «Облачный» значит, что программа работает не на вашем компьютере, а на серверах компании в интернете, и данные модели уходят туда. GitHub Copilot — платный ИИ-помощник программиста; C# — язык, на котором пишут полноценные плагины для Revit; «агент» — ИИ, который не только отвечает, но и сам выполняет цепочку действий в программе. Проверка каждого пункта по первоисточникам на 29.09.2026 собрана в таблице.</p>
+<div class="tw" tabindex="0" role="region" aria-label="Таблица (прокручивается по горизонтали)"><table role="table">
+<thead>
+<tr>
+<th>Пункт обзора</th>
+<th>Что оказалось на деле (сентябрь 2026)</th>
+<th>Вердикт</th>
+<th>Польза для ОВиК</th>
+<th>В России</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>pyRevit</td>
+<td>Бесплатный, с открытым кодом (исходный текст опубликован, лицензия GPL-3.0); версия 6.5.5 от 25.08.2026, поддерживает Revit 2027; число «сотни команд» нигде не подсчитано (<a href="https://github.com/pyrevitlabs/pyRevit" target="_blank" rel="noopener">GitHub</a>, <a href="http://pyrevitlabs.io/posts/6.5.0-release/" target="_blank" rel="noopener">выпуск 6.5.0</a>)</td>
+<td>Верно</td>
+<td>Высокая — площадка для своих кнопок</td>
+<td>Работает на компьютере, без аккаунта и интернета</td>
+</tr>
+<tr>
+<td>MagiCAD</td>
+<td>Подбор сечений, балансировка, потери давления, акустика, системы с переменным расходом воздуха (VAV). Бесплатная библиотека MagiCAD Cloud — более 1 млн объектов от 270+ производителей. ИИ нет, цена по запросу (<a href="https://www.magicad.com/tools/ventilation-calculations/" target="_blank" rel="noopener">MagiCAD</a>, <a href="https://www.magicad.com/cloud/for-designers/faq/" target="_blank" rel="noopener">MagiCAD Cloud</a>)</td>
+<td>Верно с поправками</td>
+<td>Самая высокая из всего списка</td>
+<td>Поставки прекращены</td>
+</tr>
+<tr>
+<td>DiRoots One</td>
+<td>8 инструментов, но с 23.10.2024 модель freemium (базовое бесплатно, остальное за деньги), Premium — €100 в год; «FamilyRebar» и поиска коллизий в наборе нет (<a href="https://diroots.com/diroots-freemium-transition-detailed-information/" target="_blank" rel="noopener">DiRoots</a>)</td>
+<td>Частично верно, устарело</td>
+<td>Средняя: параметры, фильтры, Excel</td>
+<td>Нет данных</td>
+</tr>
+<tr>
+<td>Enscape, Lumion LiveSync</td>
+<td>Визуализация в реальном времени, не ИИ; Lumion — отдельная программа, а не «один клик» (<a href="https://marketplace.autodesk.com/apps/3243f872-b42d-40f6-863e-acbc2b341e0f" target="_blank" rel="noopener">Autodesk Marketplace</a>)</td>
+<td>Частично верно</td>
+<td>Почти нет, только презентации</td>
+<td>Нет данных</td>
+</tr>
+<tr>
+<td>BIMLOGIQ Copilot / Smart Annotation</td>
+<td>Переименован в «агента» Argus; Revit 2022–2026; обработка на серверах. В независимом тесте — 1–2 минуты на запрос и сбои на точной геометрии (<a href="https://www.bimpure.com/blog/bimlogiq-for-revit" target="_blank" rel="noopener">BIM Pure</a>)</td>
+<td>Частично верно</td>
+<td>Низкая–средняя: вендор заявляет проходки и проверку расходов, независимых проверок нет</td>
+<td>Облачный, доступность не подтверждена</td>
+</tr>
+<tr>
+<td>Glyph Copilot</td>
+<td>Виды, листы, марки, размеры; «аудита модели» в описании нет; около $600–1 060 в год за место (<a href="https://www.evolvelab.io/glyph" target="_blank" rel="noopener">EvolveLAB</a>)</td>
+<td>Частично верно</td>
+<td>Низкая–средняя</td>
+<td>Облачный, подписка в долларах</td>
+</tr>
+<tr>
+<td>GitHub Copilot + Claude 3.5 Sonnet, C#/.NET 8, «плагин за минуты»</td>
+<td>Claude 3.5 Sonnet выведен 28.10.2025; с 28.09.2026 в Copilot доступен Claude Sonnet 5.5; Revit 2027 требует .NET 10; «за минуты» пишется только простейший скрипт (<a href="https://platform.claude.com/docs/en/about-claude/model-deprecations" target="_blank" rel="noopener">Anthropic</a>, <a href="https://github.blog/changelog/2026-09-28-claude-sonnet-5-5-in-github-copilot/" target="_blank" rel="noopener">GitHub</a>)</td>
+<td>Устарело и преувеличено</td>
+<td>Косвенная: писать свои инструменты</td>
+<td>Anthropic Россию не обслуживает</td>
+</tr>
+<tr>
+<td>«Forma полностью заменит Revit»</td>
+<td>Autodesk на AU 2026: со временем — да, но постепенно и без срока; сейчас Forma — ранние стадии архитектуры, без инженерных систем (<a href="https://aecmag.com/bim/autodesk-confirms-forma-will-replace-revit-over-time/" target="_blank" rel="noopener">AEC Magazine</a>)</td>
+<td>Направление верно, «полностью» — преувеличение</td>
+<td>Сейчас нет</td>
+<td>Облачная платформа Autodesk</td>
+</tr>
+<tr>
+<td>Planfinder, Finch 3D</td>
+<td>Генерируют планировки квартир; расстановка дверей и мебели не подтверждена (<a href="https://hubspot.finch3d.com/pricing-4" target="_blank" rel="noopener">Finch</a>, <a href="https://www.planfinder.xyz/" target="_blank" rel="noopener">PlanFinder</a>)</td>
+<td>Частично верно</td>
+<td>Нет</td>
+<td>—</td>
+</tr>
+<tr>
+<td>WiseBIM AI</td>
+<td>Стены, окна, двери, плиты из PDF, DWG, JPEG; около 80 % стен распознаёт сам; инженерные системы не распознаёт; $49 в месяц, нужен интернет (<a href="https://marketplace.autodesk.com/apps?id=7792821748025964445" target="_blank" rel="noopener">Autodesk Marketplace</a>)</td>
+<td>Верно для архитектуры</td>
+<td>Узкая: подоснова, если архитектор прислал только PDF</td>
+<td>Облачный</td>
+</tr>
+<tr>
+<td>Veras</td>
+<td>ИИ-рендер по виду модели; «10–15 секунд» у вендора не найдено (<a href="https://www.evolvelab.io/veras" target="_blank" rel="noopener">EvolveLAB</a>)</td>
+<td>Верно, цифра не подтверждена</td>
+<td>Нет</td>
+<td>Облачный, оплата кредитами</td>
+</tr>
+<tr>
+<td>«3–4× аннотации, 5× концепт, 100 % без ошибок»</td>
+<td>Источник таблицы не найден; независимая оценка — 2–3× на конкретных повторяющихся задачах (<a href="https://dancumberlandlabs.com/blog/revit-construction/" target="_blank" rel="noopener">Dan Cumberland Labs</a>)</td>
+<td>Неверно, маркетинг</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table></div>
+<p>Обзор пропустил самое полезное для ОВиК в самом Revit — обычные, не «умные» инструменты последней версии. Revit 2027 получил <strong>MEP Sizing Calculator</strong> — подбор размеров воздуховодов (с обновления 2027.1) и труб (с 2027.2) по скорости, трению и пропускной способности с таблицей подходящих вариантов. HVAC Zones превратились в System-Zones. Появилась кнопка создания стояков при прокладке воздуховода или трубы, на экране показываются подсказки по точкам подключения. Встроены правила нумерации элементов (Rule-Based Numbering) и маркировка по образцу (Tag by Example, 2027.2) (<a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-WhatsNew/files/GUID-C81929D7-02CB-4BF7-A637-9B98EC9EB38B.htm" target="_blank" rel="noopener">Autodesk Help: что нового в Revit 2027</a>). Встроенная нумерация к тому же закрывает то, что обзор приписывал DiRoots. Для Revit 2026 вторичные источники называют переопределение коэффициентов потерь давления и расчёт нагрузок по ASHRAE 2023 (<a href="https://www.augi.com/articles/detail/whats-new-in-revit-2026" target="_blank" rel="noopener">AUGI</a>); ASHRAE — Американское общество инженеров по отоплению, охлаждению и кондиционированию, его справочники лежат в основе американских методик.</p>
+<p>Цифры обзора — самое слабое место. «100 % без ошибок» не обещает ни один серьёзный источник. Лучшие научные системы, где ИИ отвечает на вопросы по BIM-модели (трёхмерной модели здания, в которой у каждого элемента есть параметры), показывают около <strong>80 %</strong> правильных ответов (<a href="https://mediatum.ub.tum.de/download/1781947/1781947.pdf" target="_blank" rel="noopener">TUM</a>), а управление Revit по командам — «до 90 %» на специально подобранных тестах (<a href="https://linjiarui.net/files/2026-06-22-BIM-design-assistant-driven-by-LLM-agents.pdf" target="_blank" rel="noopener">Jiarui Lin, 2026</a>). Каждая десятая–пятая операция с ошибкой — это не «ноль ошибок на площадке», а обязательная проверка человеком. Цифра «тегирование на 70 % быстрее» — это заявление самого BIMLOGIQ в пересказе конкурента ArchiLabs, то есть около 1,7 раза, и на архитектурных задачах (<a href="https://archilabs.ai/posts/archilabs-vs-bimlogiq-features-pricing-and-verdict" target="_blank" rel="noopener">ArchiLabs</a>). Источники, на которые опирается обзор, во многом рекламные. Автор одного из них — глава компании-конкурента (<a href="https://atomatiq.io/blog/best-revit-plugins-and-add-ins" target="_blank" rel="noopener">Atomatiq</a>), другой ставит в рейтинг собственный продукт (<a href="https://www.nomic.ai/compare/best-ai-for-revit" target="_blank" rel="noopener">Nomic</a>). Упоминание Claude 3.5 Sonnet выдаёт, что часть текста написана в 2024 — начале 2025 года.</p>
+<p>С Forma ситуация тоньше, чем в обзоре. Autodesk на конференции AU 2026 (15.09.2026) прямо ответил, что со временем всё больше работы будет переходить из Revit в Forma. Но оговорил, что резкого перехода не будет и в Revit продолжат вкладываться: он становится «подключённым клиентом» Forma (<a href="https://architosh.com/2026/09/au2026-autodesk-expands-forma-and-leverages-ai/" target="_blank" rel="noopener">Architosh</a>; <a href="https://parametric-architecture.com/autodesk-shift-from-revit-to-forma/" target="_blank" rel="noopener">Parametric Architecture</a>). Сегодняшний Forma Building Design — браузерный инструмент для архитектурной проработки. Инженерные системы Autodesk пока лишь называет «очевидным кандидатом» на будущее (<a href="https://aecmag.com/bim/forma-building-design/" target="_blank" rel="noopener">AEC Magazine</a>). «ИИ считает ветер, солнце, шум» тоже преувеличено: ИИ прямо назван только в быстром анализе ветра, остальное — обычное физическое моделирование (<a href="https://www.autodesk.com/learn/ondemand/tutorial/analysis-in-forma" target="_blank" rel="noopener">Autodesk</a>). Для ОВиК-инженера Forma сегодня ничего не даёт. Стратегически это сигнал: Autodesk переносит работу в облако, куда российским компаниям путь закрыт.</p>
+<h2>Запрет Autodesk от 20.03.2024 меняет ответ сильнее любого плагина</h2>
+<p>Главное условие для российского инженера — правовое, а не техническое. Autodesk приостановил работу в России <strong>02.03.2022</strong>, а в августе 2022 объявил о полном уходе (<a href="https://adsknews.autodesk.com/en/views/crisis-in-ukraine/" target="_blank" rel="noopener">Autodesk News</a>). <strong>20.03.2024</strong> компания письмом запретила партнёрам допускать к своим продуктам и сервисам российские дочерние компании и третьих лиц в России. Основанием стал 12-й пакет санкций ЕС (<a href="https://www.cnews.ru/news/top/2024-03-23_v_rossii_ofitsialno_zapretili" target="_blank" rel="noopener">CNews</a>; <a href="https://www.ancb.ru/publication/read/16908" target="_blank" rel="noopener">ancb.ru</a>). С апреля 2024 встроенный модуль лицензирования при подключении к интернету блокирует запуск Revit и AutoCAD, включая легально купленные бессрочные лицензии (<a href="https://www.cnews.ru/news/top/2024-04-19_autocad_v_rossii_bolshe_ne_rabotaet" target="_blank" rel="noopener">CNews</a>). Легального способа купить, продлить или получить поддержку Revit в России в найденных источниках нет. Карточки Revit у российских реселлеров (например, продление у Softline от 26 662,88 ₽) выглядят устаревшими, реальная покупка не подтверждена (<a href="https://store.softline.ru/autodesk/829i1-008730-l479-11682/" target="_blank" rel="noopener">Softline</a>). Риск нелицензионного использования конкретен: по ст. 146 УК РФ крупный ущерб начинается с <strong>100 тыс. ₽</strong>, особо крупный — с <strong>1 млн ₽</strong> по стоимости лицензий (<a href="https://www.consultant.ru/document/cons_doc_LAW_10699/b683408102681707f2702cff05f0a3025daab7ab/" target="_blank" rel="noopener">КонсультантПлюс</a>). Набор «Revit плюс плагины» легко превышает оба порога. Верховный суд в 2025 году отменил приговор директору, потому что не был доказан умысел (<a href="https://habr.com/ru/articles/954690/" target="_blank" rel="noopener">Хабр</a>), но это не снимает риска. Отсюда важный вывод для ИИ-части обзора: все новые ИИ-функции Autodesk требуют входа в учётную запись Autodesk. Это Assistant, официальный MCP-сервер (связующее звено, через которое внешний ИИ работает с моделью Revit; подробнее ниже), Forma. Для российских компаний они закрыты по условиям самого Autodesk.</p>
+<p>MagiCAD — самый полезный пункт обзора — в России тоже недоступен. На русской странице MagiCAD прямо сказано, что из-за санкций ЕС компания прекратила поставки ПО и связанных услуг в Россию и Беларусь (<a href="https://www.magicad.com/ru/contact-sales/" target="_blank" rel="noopener">MagiCAD RU</a>). Российские дистрибьюторы пишут о приостановке поставок (<a href="https://infars.ru/software/product/magicad/" target="_blank" rel="noopener">ИНФАРС</a>; <a href="https://buildsoft.ru/product/magicad/magicad-dlya-revit-kommercheskie-litsenzii-i-podpiska/" target="_blank" rel="noopener">БилдСофт</a>). Ридан (бывший Danfoss в России) в феврале 2025 объяснил, что не может обновлять базы своего оборудования для MagiCAD и инженерам приходится считать вручную (<a href="https://community.ridan.ru/threads/bazy-oborudovanija-dlja-magicad.7314/" target="_blank" rel="noopener">сообщество Ридан</a>). С производителями оборудования картина смешанная. Danfoss вышел из России, его бизнес работает как «Ридан» (<a href="https://www.danfoss.com/en/about-danfoss/news/cf/prepares-to-exit-russia-and-belarus/" target="_blank" rel="noopener">Danfoss</a>). Systemair приостановил продажи 04.05.2022, но, по вторичным данным, продолжает производство в Пушкино (<a href="https://leave-russia.org/systemair" target="_blank" rel="noopener">leave-russia.org</a>). Европейские предприятия Daikin приостановили работу в России (<a href="https://holodcatalog.ru/news/company-news/daikin-priostanavlivaet-deyatelnost-v-rossii/" target="_blank" rel="noopener">Холодильная индустрия</a>). Поэтому связку «зарубежная программа подбора → Revit» каждый раз надо проверять отдельно.</p>
+<p>С зарубежными ИИ-сервисами так же. Россия не входит в список стран, где работает Claude — ни через сайт, ни через API (<a href="https://www.anthropic.com/supported-countries" target="_blank" rel="noopener">Anthropic</a>). API — набор команд, через которые одна программа управляет другой. Нет России и в списке OpenAI; там предупреждают, что доступ из других стран может привести к блокировке аккаунта (<a href="https://developers.openai.com/api/docs/supported-countries" target="_blank" rel="noopener">OpenAI</a>). В мае 2026 российские СМИ писали о нескольких сотнях заблокированных российских аккаунтов Claude. С 08.07.2026 Anthropic может требовать подтверждения личности для некоторых функций (<a href="https://habr.com/ru/companies/tsnis/articles/1051764/" target="_blank" rel="noopener">Хабр</a>; <a href="https://rb.ru/reviews/claude-v-rossii/" target="_blank" rel="noopener">rb.ru</a>). По GitHub Copilot данные противоречат друг другу (см. раздел о расхождениях). Даже при техническом доступе остаются вопросы данных. Передача персональных данных в зарубежный сервис считается трансграничной (<a href="https://cloud.ru/blog/ii-i-152-fz" target="_blank" rel="noopener">Cloud.ru о 152-ФЗ</a>). На значимых объектах КИИ (критической информационной инфраструктуры — важных для государства систем вроде энергетики и связи) с 01.01.2025 запрещено использовать иностранное ПО (<a href="https://kontur.ru/talk/spravka/54411-ukaz_prezidenta_ob_importozameshchenii" target="_blank" rel="noopener">Контур.Толк</a>). Договор с заказчиком часто прямо запрещает выносить проект за периметр компании. Российские языковые модели (программы, которые понимают и пишут текст и программный код, как ChatGPT) — GigaChat (Сбер) и Алиса/YandexGPT (Яндекс) — работают из России напрямую и оплачиваются в рублях. Yandex Cloud для юрлиц заявляет соответствие закону о персональных данных (<a href="https://vc.ru/provod/3018466-yandeks-gpt-osobennosti-i-podklyuchenie" target="_blank" rel="noopener">vc.ru</a>; <a href="https://developers.sber.ru/help/gigachat-api/best-ai-instruments" target="_blank" rel="noopener">Sber Developers</a>). Готовых связок этих моделей с Revit, Renga или nanoCAD не нашлось. Есть только демонстрации вроде бота на GigaChat, который отвечает по сорока загруженным статьям о BIM (<a href="https://habr.com/ru/articles/1004802/" target="_blank" rel="noopener">Хабр</a>).</p>
+<p>Государство при этом требует информационного моделирования. В России его называют ТИМ — технологии информационного моделирования; модель, которую сдают заказчику и в экспертизу, — ЦИМ, цифровая информационная модель. Случаи, когда модель обязательна, установлены ПП РФ № 331 от 05.03.2021 (<a href="http://publication.pravo.gov.ru/Document/View/0001202103100026" target="_blank" rel="noopener">pravo.gov.ru</a>). Правила её формирования — ПП № 614 от 17.05.2024: оно действует с 01.09.2024 до 01.09.2030 и заменило ПП № 1431 (<a href="https://www.garant.ru/products/ipo/prime/doc/408938854/" target="_blank" rel="noopener">Гарант</a>). Для многоквартирных домов по договорам долевого участия ТИМ обязательны при проектировании с 01.07.2024 и при строительстве с 01.01.2025 (<a href="https://infars.ru/blog/popadaet-li-vasha-organizatsiya-pod-trebovaniya-tim_-razbor-po-tipam-obektov-i-srokam/" target="_blank" rel="noopener">ИНФАРС</a>). Сроки для бюджетных объектов в источниках расходятся (см. последний раздел). Модель сдаётся в формате <strong>IFC 4, не более 500 МБ</strong> на раздел, текстовая часть — в XML (формате структурированных текстовых данных) (<a href="https://xn--e1ajpfcj5e.xn--d1aqf.xn--p1ai/docs/methodology.pdf" target="_blank" rel="noopener">методические рекомендации Минстроя</a>). В проекте приказа о составе ЦИМ предусмотрен отдельный раздел «Отопление, вентиляция, кондиционирование воздуха и тепловые сети». Утверждён ли приказ, неизвестно (<a href="https://ancb.ru/publication/read/19518" target="_blank" rel="noopener">ancb.ru</a>). Прямого требования работать именно в российском ПО в ПП 331 и 614 исследователи не нашли. Давление идёт через КИИ, госзакупки и инициативу Минстроя установить «красную линию» для иностранного ПО в проектировании — 31.12.2025. Итог этой инициативы неизвестен (<a href="https://ancb.ru/publication/read/19309" target="_blank" rel="noopener">ancb.ru</a>).</p>
+<p>Отечественные программы закрывают ОВиК частично, но по-разному. <strong>nanoCAD BIM Вентиляция</strong> даёт аэродинамический расчёт, тепловлажностный анализ, спецификации по ГОСТ и экспорт в IFC. Программа в реестре российского ПО (официальном списке Минцифры) под № 12630, стоит от 71 500 ₽, есть 30 дней пробы (<a href="https://nanocad.ru/products/bim/ventilation/" target="_blank" rel="noopener">Нанософт</a>). В версии 26 (28.07.2026) импортированные IFC-модели становятся полноценными элементами проекта (<a href="https://rusapr.ru/news/nanocad-bim-ventilyatsiya-26-menshe-rutiny-i-bolshe-avtomatizatsii/" target="_blank" rel="noopener">Русский САПР</a>). Набор «Инженерный BIM» стоит от 138 100 ₽ в год (<a href="https://nanocad.maxsoft.ru/bim/" target="_blank" rel="noopener">МаксСофт-24</a>). <strong>Model Studio CS Отопление и вентиляция</strong> считает аэродинамику, теплопотери, гидравлику и воздухообмен, работает на nanoCAD, в том числе под российскими версиями Linux — операционными системами, заменяющими Windows (<a href="https://www.csoft.ru/soft/modelstudiocs-heating/modelstudiocs-heating.html" target="_blank" rel="noopener">СиСофт</a>). Годовая подписка — 43 100 ₽, бессрочная лицензия — 172 700 ₽ (<a href="https://infars.ru/software/product/model-studio-cs-otoplenie-i-ventilyatsiya/" target="_blank" rel="noopener">ИНФАРС</a>). <strong>Renga Professional</strong> умеет автоматически прокладывать воздуховоды по правилам, выпускать спецификации по ГОСТ 21.110-2013 и схемы по ГОСТ 21.602-2016. Но аэродинамика и гидравлика в ней идут через внешние модули (<a href="https://rengabim.com/mep-ventiliaciya/" target="_blank" rel="noopener">Renga</a>). Бессрочная лицензия Renga — 190 000 ₽, годовая — 95 000 ₽ (<a href="https://store.softline.ru/renga/renga-professional/" target="_blank" rel="noopener">Softline</a>). Pilot-BIM и CADLib — среды общих данных, то есть хранилища, где собираются и сверяются модели всех разделов, а не программы для моделирования (<a href="https://pilotems.com/ru/products/pilot-bim/" target="_blank" rel="noopener">Pilot-BIM</a>). Мост между Revit и этими программами один — IFC. При переносе часть элементов теряет параметричность, материалы и пользовательские свойства (<a href="https://rengabim.com/stati/bim-tandem-renga-revit/" target="_blank" rel="noopener">Renga</a>). Аналога Dynamo (встроенного в Revit конструктора программ из блоков) по мощности у Renga нет (<a href="https://landproject.net/blog-posts/analogi-revit-v-rossii-2026.html" target="_blank" rel="noopener">ЛЭНДПРОДЖЕКТ</a>). Типичная практика по вторичным источникам — гибрид и постепенный переход, а не одномоментная замена (<a href="https://www.c-o-k.ru/market_news/ispolzovanie-inostrannogo-softa-v-stroitelnoy-otrasli-s-2026-goda-mogut-zapretit" target="_blank" rel="noopener">ЦОК</a>). Собственный ИИ у отечественных вендоров пока не про ОВиК. У Нанософт есть NSR Specification: проверка модели примерно по 30 000 нормативных требований, но примеры — из газовой, атомной и промышленной отраслей (<a href="https://nanocad.ru/press/article/iskusstvennyy-intellekt-v-proektirovanii-nanosoft-predstavila-reshenie-nsr-specification-na-zakrytom/" target="_blank" rel="noopener">Нанософт</a>).</p>
+<h2>Расчёты по СП Revit сам не делает — их закрывают российские плагины</h2>
+<p>Встроенные расчёты Revit построены на американской базе. Расчёт тепловых нагрузок (Heating and Cooling Loads) сделан по справочнику ASHRAE (<a href="https://knowledge.autodesk.com/support/revit/learn-explore/caas/CloudHelp/cloudhelp/2021/ENU/Revit-Analyze/files/GUID-0B0730E6-967F-4311-AB05-71E96026F56C-htm.html" target="_blank" rel="noopener">Autodesk</a>). Более новый Systems Analysis работает на EnergyPlus — американской программе энергомоделирования зданий (<a href="https://www.energy.gov/cmei/buildings/articles/autodesk-brings-detailed-energyplus-hvac-simulation-revit" target="_blank" rel="noopener">Минэнерго США</a>). Типовые значения занятости, конструкций и вентиляции взяты из американских стандартов ASHRAE 62.1 и IECC, а погода — из файлов американского формата EPW (<a href="https://rippleengineeringsoftware.com/running-hvac-heating-and-cooling-loads-in-revit/" target="_blank" rel="noopener">Ripple Engineering</a>). В Revit 2022–2025 старый расчёт нагрузок вообще скрыт, и включается он только правкой служебного файла Revit.ini (<a href="https://help.autodesk.com/cloudhelp/2025/ENU/Revit-Analyze/files/GUID-2DD2759D-3E3A-4AE7-BB37-0DF53981591E.htm" target="_blank" rel="noopener">Autodesk Help 2025</a>; <a href="https://resources.imaginit.com/revit/revit-is-missing-heating-and-cooling-calculation-tool" target="_blank" rel="noopener">IMAGINiT</a>). Российская практика — другая методика: стационарный расчёт теплопотерь по расчётным температурам СП 131 с добавками и нормативной инфильтрацией. Поэтому цифры Revit можно использовать только «для себя», но не как расчёт по СП для экспертизы.</p>
+<p>Нормы за последние два года обновились, и это важно при выборе любого инструмента. <strong>СП 50.13330.2024</strong> («Тепловая защита зданий») действует с 16.06.2024 (<a href="https://base.garant.ru/409274974/" target="_blank" rel="noopener">Гарант</a>). <strong>СП 60.13330.2020</strong> действует с Изменением № 5 с 25.02.2025 (<a href="https://base.garant.ru/411596469/" target="_blank" rel="noopener">Гарант</a>). <strong>СП 131.13330.2025</strong> («Строительная климатология») заменил редакцию 2020 года (<a href="https://base.garant.ru/412664133/" target="_blank" rel="noopener">Гарант</a>). Климатические данные в нём пересчитаны по 2019–2023 годам, а число пунктов выросло <strong>со 110 до 440</strong> (<a href="https://www.abok.ru/for_spec/articles.php?nid=9259" target="_blank" rel="noopener">АВОК</a>). Ни один из найденных плагинов и программ не подтвердил, что обновил климатическую базу до редакции 2025 года. Плагин теплопотерь на rubim.tech, например, в описании ссылается на СП 131.13330.2020 (страница обновлена в мае 2023) (<a href="https://rubim.tech/%D1%80%D0%B0%D1%81%D1%87%D1%91%D1%82-%D1%82%D0%B5%D0%BF%D0%BB%D0%BE%D0%BF%D0%BE%D1%82%D0%B5%D1%80%D1%8C-%D0%B2-revit/" target="_blank" rel="noopener">RuBIM.Tech</a>). Первый вопрос разработчику любого расчётного инструмента — какой редакцией СП он считает.</p>
+<h3>Теплопотери и теплопоступления</h3>
+<p>Внутри Revit по российским нормам считает <strong>«Два Облака. Отопление Revit»</strong>: теплопотери с учётом ограждений, грунта и инфильтрации, гидравлику, балансировку клапанов, подбор радиаторов и арматуры (<a href="https://dvaoblaka.ru/revit/heating" target="_blank" rel="noopener">Два Облака</a>). Модуль кондиционирования считает теплопоступления по часам суток от солнца, освещения, оборудования и людей (<a href="https://dvaoblaka.ru/revit/conditioning" target="_blank" rel="noopener">Два Облака</a>). Работать эти плагины могут только при правильно заданных пространствах (Spaces — объёмах помещений в инженерной модели Revit, где хранятся нагрузки и расходы). Цена на сайте не опубликована. Плагин rubim.tech проходит девять шагов и в конце сам расставляет приборы отопления. Но потолки в модели он не поддерживает, а стены ищет только в пределах 500 мм от границы пространства. Значит, результат целиком зависит от аккуратности архитектурной модели. Второй путь — внешняя программа. <strong>Audytor OZC</strong> считает теплопотери в том числе по российским нормам и забирает здание из Revit через бесплатный плагин в формате gbXML — формате передачи помещений и ограждений в расчётные программы (<a href="https://store.softline.ru/sankom/-108663/" target="_blank" rel="noopener">Softline</a>). Страница одного из продавцов при этом указывает только Revit 2016–2019 и нормы 2012 года, так что поддержку свежих версий нужно уточнять (<a href="https://buildsoft.ru/product/sankom/audytor-ozc/" target="_blank" rel="noopener">БилдСофт</a>). Бесплатный <strong>VALTEC.PRG</strong> считает тепловую нагрузку помещений и отопление вне модели (<a href="https://valtec.ru/document/calculate/" target="_blank" rel="noopener">VALTEC</a>). Model Studio CS получает модель из Revit через IFC.</p>
+<h3>Аэродинамика воздуховодов</h3>
+<p>Revit подбирает сечения воздуховодов четырьмя способами (по трению, скорости, равному трению, восстановлению статического давления) и выдаёт отчёт о потерях давления. Но у подбора есть ограничения. Он учитывает только размеры и не видит конструктивных ограничений. При соотношении сторон больше 6:1 выходят нереалистичные размеры. Бывает тройник с ответвлением больше магистрали, так что ручная правка обязательна (<a href="https://muratovbim.pro/blog/revit-avtomaticheskiy_podbor_secheniy_trub_i_vozdukhovodov/" target="_blank" rel="noopener">блог Муратова</a>). Потери в тройниках Revit разносит по трём присоединениям, и видны они только в аэродинамическом отчёте (<a href="https://help.autodesk.com/cloudhelp/2021/ENU/Revit-MEPEng/files/GUID-EFD12EAC-F54F-4C13-9E0A-7901CFE644C0.htm" target="_blank" rel="noopener">Autodesk Help</a>). Коэффициенты местных сопротивлений взяты из ASHRAE, а не из российских справочников вроде Староверова. Для сдаточного расчёта в России есть два плагина. <strong>«Два Облака. Вентиляция»</strong> считает расходы, скорости и потери давления с учётом всех местных сопротивлений, подбирает клапаны для балансировки. Она также считает дымоудаление и подпор по рекомендациям ВНИИПО МЧС и подбирает приточно-вытяжные установки, вентиляторы и решётки (<a href="https://dvaoblaka.ru/revit/ventilation" target="_blank" rel="noopener">Два Облака</a>). <strong>МЕКО</strong> — более 40 плагинов для Revit 2020–2027, в том числе аэродинамика с ручной правкой местных сопротивлений и гидравлика отопления и холодоснабжения. Разработчик заявляет ориентацию на СП 60.13330.2020. Комплект стоит <strong>7 900 ₽</strong> (одна версия Revit, обновления бессрочно), подписка — <strong>от 2 000 ₽ в месяц</strong>, отдельный плагин — <strong>от 750 ₽</strong> (<a href="https://www.mekopro.com/plugin" target="_blank" rel="noopener">МЕКО</a>). Независимых сравнений точности этих плагинов с ручным расчётом по СП не найдено.</p>
+<h3>Гидравлика, балансировка, преднастройка клапанов</h3>
+<p>Встроенный гидравлический расчёт Revit тоже американский, и клапаны по российской практике он не подбирает (<a href="https://isicad.ru/ru/articles.php?article_num=20497" target="_blank" rel="noopener">isicad</a>). Два Облака балансирует систему по заводским данным клапанов, пересобирает её по результатам и загружает оборудование в модель семействами с параметрами. Семейство — библиотечный объект Revit (решётка, вентилятор, радиатор) с геометрией и параметрами. Она же считает схемы чиллер–фанкойл и подбирает фреонопроводы VRF (мультизональных систем кондиционирования). Из внешних программ <strong>Audytor CO/SET</strong> подбирает диаметры и преднастройки клапанов. Версия Pro переносит в Revit диаметры, настройки клапанов, размеры приборов и потери давления через плагин «SET for Revit», но источник об этом — 2021 года, и поддержка свежих версий Revit не подтверждена (<a href="https://www.c-o-k.ru/articles/eksport-modeley-inzhenernyh-sistem-iz-programmy-audytor-set-v-programmu-autodesk-revit" target="_blank" rel="noopener">С.О.К.</a>). <strong>VALTEC SET</strong> импортирует подоснову из Revit и отдаёт обратно трёхмерные модели систем (<a href="https://valtec.ru/news/vnimaniyu_proektirovshikov_valtec_set.html" target="_blank" rel="noopener">VALTEC</a>). Плагин DCAD от Ридан рассчитан на AutoCAD и nanoCAD, совместимость с Revit не указана (<a href="https://community.ridan.ru/threads/osvojte-rabotu-v-plagine-dlja-gidravlicheskogo-raschjota-s-podderzhkoj-ehkspertov-ridan.10139/" target="_blank" rel="noopener">Ридан</a>).</p>
+<h3>Воздухообмен</h3>
+<p>Готового плагина, который заполнял бы расход воздуха в пространствах по кратностям и нормам СП 60, в источниках нет. Формула проста: расход L = n × V, где n — нормируемая кратность, V — объём помещения (<a href="https://inner.su/articles/raskhod-vozdukha-dlya-ventilyatsii-kratnost-vozdukhoobmena-1-10-1-ch/" target="_blank" rel="noopener">inner.su</a>). Рабочая схема выглядит так. Пространства создаются из архитектурной модели, например плагином BimStep (<a href="https://www.bimstep.com/en-mep" target="_blank" rel="noopener">BimStep</a>). В них добавляются параметры «категория помещения» и «кратность приток/вытяжка». Скрипт заполняет расход, а аэродинамический плагин берёт эти значения дальше. Это идеальная задача для ИИ-помощника: он пишет скрипт. Но норму и правило проверяет инженер, потому что ошибка в правиле размножится на всю модель.</p>
+<h3>Подбор оборудования</h3>
+<p>Подбор оборудования в России завязан на местных разработчиков. Два Облака подбирает радиаторы, установки, вентиляторы, VRF и чиллеры и делает программы подбора для более чем 20 производителей (Blauberg, Северкон, Вентзащита и др.). Установки выгружаются в Revit семействами со всеми секциями и точками подключения (<a href="https://dvaoblaka.ru/manufacturer/ahu" target="_blank" rel="noopener">Два Облака</a>). У Арктоса есть программы подбора воздухораспределителей и шумоглушителей и сервис переподбора иностранного оборудования на отечественное (<a href="https://arktoscomfort.ru/servis-avtomatizirovannogo-podbora/" target="_blank" rel="noopener">Арктос</a>). Плагин ВЕЗА версии 1.0 подбирает пока только клапаны и сам заполняет марку (<a href="https://www.veza.ru/novosti/plagin-podbora-oborudovaniya-veza-sovremennyj-instrument-dlya-vashego-proekta" target="_blank" rel="noopener">ВЕЗА</a>). Ридан выпускает модели Revit теплообменников и тепловых пунктов (<a href="https://ridan.ru/news/bim-modeli-produkcii-ridan" target="_blank" rel="noopener">Ридан</a>).</p>
+<div class="tw" tabindex="0" role="region" aria-label="Таблица (прокручивается по горизонтали)"><table role="table">
+<thead>
+<tr>
+<th>Задача</th>
+<th>Что умеет сам Revit и где предел</th>
+<th>Плагины внутри Revit</th>
+<th>Внешние программы</th>
+<th>На что смотреть по нормам</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Теплопотери</td>
+<td>Расчёт по ASHRAE и EnergyPlus, американские справочники; в 2022–2025 скрыт</td>
+<td>Два Облака; rubim.tech (СП 131 редакции 2020)</td>
+<td>Audytor OZC Pro (gbXML), VALTEC.PRG, Model Studio CS (IFC)</td>
+<td>СП 50.13330.2024, СП 131.13330.2025</td>
+</tr>
+<tr>
+<td>Теплопоступления</td>
+<td>Тот же движок</td>
+<td>Два Облака (по часам суток)</td>
+<td>Программы производителей</td>
+<td>Расчётные параметры из СП 131 редакции 2025</td>
+</tr>
+<tr>
+<td>Аэродинамика</td>
+<td>4 способа подбора, отчёт потерь, коэффициенты ASHRAE; в 2027 — MEP Sizing Calculator</td>
+<td>Два Облака, МЕКО</td>
+<td>Vent-Calc, Model Studio CS, nanoCAD BIM Вентиляция</td>
+<td>СП 60.13330.2020 с Изм. № 5, российские справочники местных сопротивлений</td>
+</tr>
+<tr>
+<td>Гидравлика, балансировка</td>
+<td>Потери по ASHRAE, подбора клапанов нет</td>
+<td>Два Облака, МЕКО</td>
+<td>Audytor CO/SET, VALTEC SET</td>
+<td>Базы клапанов производителей, допустимые скорости</td>
+</tr>
+<tr>
+<td>Воздухообмен</td>
+<td>Ручной ввод в пространства</td>
+<td>Готового нет; скрипт Dynamo или pyRevit</td>
+<td>Excel</td>
+<td>Таблицы СП 60 и нормы по назначению здания</td>
+</tr>
+<tr>
+<td>Подбор оборудования</td>
+<td>Только вставка семейств</td>
+<td>Два Облака, ВЕЗА (клапаны)</td>
+<td>Программы Арктос, Ридан и др.</td>
+<td>Данные производителя</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Спецификации, отверстия и коллизии ускоряет порядок, а не ИИ</h2>
+<h3>Спецификации по ГОСТ</h3>
+<p>ГОСТ 21.602-2016 требует в рабочей документации ОВиК спецификацию оборудования, изделий и материалов и отсылает к форме 1 ГОСТ 21.110-2013 (<a href="https://meganorm.ru/Data2/1/4293749/4293749486.htm" target="_blank" rel="noopener">meganorm</a>). Для проектной документации отдельной формы нет (<a href="https://www.normacs.info/answers/5119" target="_blank" rel="noopener">NormaCS</a>). Основа российской практики — шаблон ADSK: российский шаблон Revit по «BIM-стандарту Autodesk» с общими параметрами, названия которых начинаются с ADSK_. В нём есть вспомогательные спецификации «В_ОВ_» и оформленные по форме 1 «О_ОВ_». Данные в оформленные переносит макрос — встроенная в шаблон мини-программа. Наименование собирается из постоянной части (ADSK_Наименование) и переменной (ADSK_Техническая характеристика: расход, давление, мощность) (<a href="https://manual2021.bim2b.ru/ov/5-3-vkladka-vid/5-3-2-speczifikaczii/" target="_blank" rel="noopener">руководство BIM2B</a>). Поверх шаблона работают недорогие инструменты. BIM2B бесплатно раздаёт Dynamo-скрипты: марки вентрешёток, запись уровня в элементы, диаметр трубы в наименовании изоляции, толщина стенки воздуховодов, длина изоляции фитингов (<a href="https://bim2b.ru/product-category/po/" target="_blank" rel="noopener">BIM2B</a>). Плагин МЕКО «Наименование воздуховодов» считает толщину стенки по приложению К СП 60.13330.2020 (для противопожарных — от 0,8 мм) и заполняет площадь в м². Пользователи плагина BIM2B как раз жалуются, что тот считает воздуховоды в погонных метрах, а нужны м² (<a href="https://www.mekopro.com/plugin-naimenovanie-vozduhovod" target="_blank" rel="noopener">МЕКО</a>; <a href="https://forum.bim2b.ru/adsk/plagin-bim2b-idei-i-zamechaniya/" target="_blank" rel="noopener">форум BIM2B</a>). Плагин ModPlus «Нумерация» бесплатен и нумерует позиции в видах и спецификациях, в том числе по группам и с префиксами (<a href="https://modplus.org/ru/revitplugins/mprnumbering" target="_blank" rel="noopener">ModPlus</a>). Одна частая ловушка описана у Муратова. Если элементы собраны в группы Revit, у параметра позиции надо разрешить разные значения в экземплярах группы, иначе номера синхронизируются (<a href="https://muratovbim.pro/blog/revit-spetsifikatsiya_vozdukhovodov-truboprovodov/" target="_blank" rel="noopener">Муратов</a>). Готовой «кнопки ГОСТ-спецификации» без настроенного шаблона нет: все инструменты работают только при заполненных параметрах ADSK. Цифры экономии здесь только рекламные: PikTools обещает «до 50 % времени на рутине» без описания замера (<a href="https://www.bimteam.ru/pt_gen" target="_blank" rel="noopener">BIMTeam</a>). Продукты «KPLN» и «Спецификатор» из запроса в поиске не нашлись.</p>
+<h3>Семейства оборудования</h3>
+<p>Семейств от российских производителей хватает, проблема в их качестве. BIMLIB публикует каталоги Вентум, SHUFT, ВЕЗА, Ostberg и других с техническими характеристиками (<a href="https://bimlib.pro/revit" target="_blank" rel="noopener">BIMLIB</a>). VALTEC выпустил 28 семейств с параметрами ФОП 2021 (файла общих параметров — единого списка параметров для шаблона и семейств) под шаблон ADSK (<a href="https://valtec.ru/news/obnovlenie_linejki_bim_modelej.html" target="_blank" rel="noopener">VALTEC</a>). ВЕЗА отдаёт модели в форматах Revit, nanoCAD и MagiCAD (<a href="https://www.veza.ru/resursy/bim" target="_blank" rel="noopener">ВЕЗА</a>). Но часть каталогов сделана под Revit 2017 и параметры 2017 года (<a href="https://bimlib.pro/articles/obzor-bim-modeley-ventilyatsionnykh-sistem-kompanii-shuft" target="_blank" rel="noopener">BIMLIB о SHUFT</a>). По опыту Муратова, большинство ошибок в системах идёт от неправильно настроенных коннекторов — точек подключения, через которые семейство соединяется с воздуховодом или трубой и передаёт расход (<a href="https://muratovbim.pro/blog/revit-pochemu_semeystvo_lomaet_trubu-vozdukhovod/" target="_blank" rel="noopener">Муратов</a>). Поэтому семейство надо проверить до вставки в рабочую модель: версию ФОП, привязку коннекторов к параметрам ADSK, ориентацию. Для корпоративной библиотеки есть Family Manager от ПИК/BIMTeam — облачная библиотека с заявками на доработку прямо из модели. Обещанные «до 200 часов в год на сотрудника» — цифра вендора (<a href="https://www.bimteam.ru/fm" target="_blank" rel="noopener">BIMTeam</a>).</p>
+<h3>Задания на отверстия</h3>
+<p>Задания на отверстия — самый ценный для автоматизации участок российской ОВиК-практики. Операция повторяется сотни раз, а ошибки дорогие: исправить отверстие 500×300 мм после стройки, по оценке TrueBIM, в <strong>3–4 раза</strong> дороже, чем на стадии проекта (<a href="https://truebim.pro/kak-my-vydaem-zadaniya-na-otverstiya-ovik-v-revit" target="_blank" rel="noopener">TrueBIM</a>). ПИК Digital сделал три плагина. Инженеры ставят «псевдоотверстия», которые ещё не режут конструкцию; архитекторы и конструкторы их согласуют, после чего плагины превращают их в настоящие проёмы. Ниши и люки остаются ручными (<a href="https://habr.com/ru/companies/pik_digital/articles/934112/" target="_blank" rel="noopener">Хабр: ПИК Digital</a>). BimStep «Отверстия» сам ставит отверстия на пересечениях и ведёт статусы цветом: красный — выдал инженер, жёлтый — согласовал первый раздел, зелёный — все. При изменении согласование сбрасывается, история хранится (<a href="https://bim-support.ru/article/prosvet/openings/bimstep" target="_blank" rel="noopener">BIM Просвет</a>). FutureBIM продаёт похожую функцию с проверкой задания и вырезанием проёмов (<a href="https://futurebim.ru/ru/revitplugins/163-zadanie-na-otverstiya-v-revit-skachat-plagin-dlya-revit" target="_blank" rel="noopener">FutureBIM</a>). Бесплатный вариант — Dynamo-скрипт. Автор такого скрипта честно перечисляет, где тот ошибается: не объединяет отверстия соседних воздуховодов, путается с противопожарными клапанами и с семействами, привязанными к плоскости. Ручная проверка обязательна везде, а само согласование не автоматизирует ни один источник.</p>
+<h3>Трассировка и коллизии</h3>
+<p>Автоматическая трассировка воздуховодов в 2026 году остаётся на уровне прототипа. Штатная функция Revit Auto-Route ограничена (<a href="https://www.cad-notes.com/revit-mep-tutorial-working-with-auto-route/" target="_blank" rel="noopener">CADnotes</a>). У MEPAIA независимых проверок нет (<a href="https://mepaia.ai/features/optimal-routes" target="_blank" rel="noopener">MEPAIA</a>). Самый продвинутый стартап Augmenta работает с электрикой в США, а модуль для труб и оборудования у него в альфа-версии (<a href="https://aecmag.com/technology/augmentas-productivity-promise/" target="_blank" rel="noopener">AEC Magazine</a>; <a href="https://www.globenewswire.com/news-release/2026/06/17/3313424/0/en/Augmenta-Releases-ACP-2-0-the-Complete-AI-Native-Design-Environment-Built-to-Multiply-Electrical-VDC-Team-Output-and-Capacity.html" target="_blank" rel="noopener">GlobeNewswire</a>). Коллизии — места, где элементы разных разделов пересекаются (воздуховод проходит сквозь балку). Внутри одной модели их ищет Revit, в сводной модели — Navisworks, программа Autodesk для сборки всех разделов в одну (<a href="https://www.artificialmodelling.com/blog/revit-vs-navisworks-clash-detection" target="_blank" rel="noopener">Artificial Modelling</a>). Navisworks — тоже продукт Autodesk со всеми российскими ограничениями. Отечественные альтернативы — Tangl Control, Pilot-BIM и проверка коллизий в Model Studio CS (<a href="https://altecsystems.ru/kak-proverka-na-kollizii-ekonomit-milliony-na-strojke/" target="_blank" rel="noopener">Альтек Системс</a>). Лучший опубликованный российский опыт — КРОК: 150–200 моделей Revit и около <strong>50 000 коллизий</strong> на старте. Команда прошла путь от Dynamo к Python (языку программирования для коротких скриптов) и затем к собственному плагину с базой данных, а главный вывод авторов — не автоматизировать ради автоматизации (<a href="https://habr.com/ru/companies/croc/articles/893956/" target="_blank" rel="noopener">Хабр: КРОК</a>). Плагины «автоисправления» коллизий смещают трубы и воздуховоды по заданным правилам, но замеров их пользы нет (<a href="https://apps.autodesk.com/RVT/en/Detail/Index?id=6653526646244853582" target="_blank" rel="noopener">Autodesk App Store</a>). Обещание обзора «100 % безошибочная модель на площадке» опровергает сама практика.</p>
+<h3>Марки и аннотации</h3>
+<p>Единственный найденный инструмент, где ИИ действительно раскладывает марки без наложений, — BIMLOGIQ Smart Annotation. Он ищет свободное место вокруг элемента и разводит выноски. Точный режим работает в облаке, быстрый — на компьютере. Воздуховоды и решётки в списке категорий явно не названы, а «2,4 секунды на 8 марок» — демонстрация вендора (<a href="https://bimlogiq.com/product/smart-annotation.html" target="_blank" rel="noopener">BIMLOGIQ</a>). В самом Revit 2027.2 появилась маркировка по образцу, в 2027.3 — изоляция аннотаций на виде (<a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-WhatsNew/files/GUID-C81929D7-02CB-4BF7-A637-9B98EC9EB38B.htm" target="_blank" rel="noopener">Autodesk Help</a>). Naviate MEP добавляет команды для наклонных труб и сложных планов, но поддерживает Revit только до 2026 (<a href="https://www.naviate.com/naviate-for-revit/naviate-mep/" target="_blank" rel="noopener">Naviate</a>). Российских ИИ-инструментов расстановки марок не найдено. Российская практика — заполнить параметры скриптом и маркировать стандартными средствами.</p>
+<h2>ИИ полезен как программист на подхвате, а не как расчётчик</h2>
+<p>Сначала о словах. Языковую модель (ChatGPT, Claude, GigaChat) в англоязычных текстах называют LLM. MCP (Model Context Protocol) — открытый стандарт-«розетка»: через него ИИ-программа вызывает готовые команды другой программы, например Revit, — читает элементы, меняет параметры, экспортирует виды.</p>
+<h3>Autodesk Assistant и Dynamo: удобно, но под документацию и через аккаунт</h3>
+<p>Autodesk встроил ИИ прямо в Revit 2027. Assistant открывается значком в заголовке окна и отвечает по справке. В расширенном режиме он делает запросы к модели, создаёт и экспортирует спецификации, виды и листы, меняет параметры, ставит марки и применяет шаблоны видов (<a href="https://blog.autodesk.io/revit-2027-and-autodesk-assistant-release-announcement/" target="_blank" rel="noopener">Autodesk Platform Services</a>). В официальных примерах — спецификация дверей, план этажа, проверка шаблонов видов на листах. Autodesk подчёркивает, что намеренно поддерживает узкий набор задач, а не весь Revit (<a href="https://www.autodesk.com/blogs/aec/2026/04/22/autodesk-assistant-in-revit-tech-preview/" target="_blank" rel="noopener">Autodesk</a>). Ни одной функции для инженерных систем Autodesk не заявляет. История чата и библиотека запросов хранятся в облаке и привязаны к учётной записи Autodesk; по заявлению компании, на них не обучают модели. Статус — Tech Preview, то есть техническая предварительная версия для пробы без гарантий (<a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-WhatsNew/files/GUID-68D8FE6D-C5B0-4503-AE27-02C715BAC25B.htm" target="_blank" rel="noopener">Autodesk Help</a>). Об «общедоступности» с обновления 2027.3 сообщает лишь пост в LinkedIn неустановленного автора (<a href="https://www.linkedin.com/feed/update/urn:li:activity:7505764845233815552" target="_blank" rel="noopener">LinkedIn</a>). Dynamo — встроенный в Revit конструктор программ из блоков-«кубиков», позволяющий автоматизировать действия без написания кода. С Revit 2027.3 в нём тоже работает Assistant: строит, запускает и объясняет графы и пишет узлы на Python. Без входа в Autodesk и без сети он не работает (<a href="https://dynamobim.org/dynamo-4-2-in-revit-2027-3-autodesk-assistant-dynamo-mcp/" target="_blank" rel="noopener">блог Dynamo</a>). Практики советуют давать ему маленькие шаги и вести в графе чек-лист, потому что прошлые сеансы он не помнит (<a href="https://dynamobim.org/ai-powered-automation-leveraging-dynamos-autodesk-assistant-alpha-to-place-as-built-weir-stones-into-a-revit-model/" target="_blank" rel="noopener">блог Dynamo</a>). Самое ценное в нём — диагностика и объяснение сломанных графов, а не их генерация с нуля (<a href="https://forum.dynamobim.com/t/would-you-use-an-mcp-based-ai-assistant-for-dynamo/114952" target="_blank" rel="noopener">форум Dynamo</a>). Для российской компании вся эта ветка закрыта: нужны Revit 2027, Windows 11 и действующая учётная запись Autodesk.</p>
+<h3>Claude и Revit через MCP: официальный сервер только читает, серверы энтузиастов умеют больше и рискованнее</h3>
+<p>Официальный Revit Public MCP Server от Autodesk вышел для Revit 2027 как Tech Preview 17.06.2026. Скачивается он из личного кабинета Autodesk и сам настраивает Claude Desktop или Cursor (<a href="https://www.autodesk.com/blogs/aec/2026/06/17/revit-public-mcp-server/" target="_blank" rel="noopener">Autodesk</a>). Сервер <strong>только читает модель</strong>, и инструментов у него семь: найти запущенный Revit, найти элементы по категории, семейству или параметрам, показать параметры, выделить, приблизить, открыть вид и экспортировать вид или спецификацию (в картинку, PDF или таблицу CSV, которую открывает Excel). Сервер на запись Autodesk обещает отдельно, без сроков. Вокруг Revit существует и много открытых серверов сообщества. Самый популярный набор mcp-servers-for-revit (345 «звёзд» на GitHub — сайте, где публикуют открытый код; звёзды — грубый признак интереса) выпущен под Revit 2020–2026. Сборки под 2027 в нём нет. Он умеет создавать и править элементы и выполнять присланный программный код, а отдельных инструментов для воздуховодов и систем у него нет (<a href="https://github.com/mcp-servers-for-revit/mcp-servers-for-revit" target="_blank" rel="noopener">GitHub</a>). На русском есть пошаговые инструкции установки (<a href="https://dzen.ru/a/ah8I3XONT01XkYqo" target="_blank" rel="noopener">Дзен</a>; <a href="https://rsnbim.ru/revit-mcp" target="_blank" rel="noopener">rsnbim.ru</a>). Живой тест российского практика показал обе стороны. Сетка осей создалась одним запросом, раскраска по параметру сработала, а на ту же задачу ушло примерно вдвое меньше времени, чем на написание плагина. Но окна получились не того размера, а элементы удалялись, хотя команды удаления были отключены в настройках сервера. Вывод автора: MCP хорош для разовых задач и прототипов, а для повторяемых процессов надёжнее плагин (<a href="https://dzen.ru/a/agYtY7mRBFQSC848" target="_blank" rel="noopener">Дзен, Исмаилов</a>).</p>
+<p>Для осторожного пользователя интереснее серверы, которые сознательно не выполняют произвольный код. KenLP/RevitMCPServer поддерживает Revit 2025–2027. Каждое изменение у него — отдельный «пакет» (транзакция), который отменяется одной командой. Есть пробный прогон (программа сначала показывает, что изменит, и ничего не трогает), пакетное заполнение параметров, список пространств и проверка коллизий. Но автор у проекта один (<a href="https://github.com/KenLP/RevitMCPServer" target="_blank" rel="noopener">GitHub</a>). AUTOM8LABS в магазине Autodesk даёт бесплатно 37 инструментов только для чтения, а 200+ инструментов на запись — за деньги (<a href="https://marketplace.autodesk.com/apps/0639863e-7269-49a3-aade-a49442c010d4" target="_blank" rel="noopener">Autodesk App Store</a>). Самая мощная и самая сложная связка — pyRevit плюс Claude Code (программа, в которой ИИ Claude сам создаёт файлы, запускает и исправляет код на компьютере). Автор разбора называет её «не plug and play». Серверную часть pyRevit нужно вручную ограничить адресом 127.0.0.1 («только этот компьютер»), потому что встроенной защиты паролем у неё нет (<a href="https://www.bimpure.com/blog/pyrevit-mcp-claude-code-tutorial" target="_blank" rel="noopener">BIM Pure</a>; <a href="https://github.com/mcp-servers-for-revit/mcp-server-for-revit-python" target="_blank" rel="noopener">GitHub</a>). Для инженера из России эта ветка упирается в ограничения Anthropic, описанные выше.</p>
+<h3>ИИ-программист: скрипт — за вечер, плагин — за часы с участием специалиста</h3>
+<p>Самое надёжное применение ИИ для ОВиК-инженера — попросить его написать небольшой скрипт: небольшую программу, которая выполняет одно повторяющееся действие. Для Revit такие скрипты пишут на Python (для pyRevit и Dynamo) или на C#, языке полноценных плагинов. Хорошо получаются выгрузка пространств с расходами в Excel, поиск пустых параметров и неподключённых элементов, массовое заполнение обозначения системы или этажа, переименование по шаблону. Ошибки ИИ предсказуемы. Он путает версии программного интерфейса Revit, забывает оформить изменение как транзакцию и собирает плагин под чужую версию .NET. Revit 2024 работает на .NET Framework 4.8, Revit 2025–2026 — на .NET 8, Revit 2027 — на .NET 10, и плагин под чужую версию просто не появится в ленте (<a href="https://3dshouse.com/how-to-build-revit-addin-with-ai/" target="_blank" rel="noopener">3dshouse</a>; <a href="https://blog.autodesk.io/revit-2027-sdk-net-10-api-changes-and-additions/" target="_blank" rel="noopener">Autodesk</a>). Российский практик с современным Claude и Revit 2027 потратил на простой плагин <strong>около двух часов</strong>. ИИ ошибся с версией .NET и использовал устаревшее свойство, но зато сам заметил противоречие в задании: контур 10×10 м при таких стенах не даёт 100 м² помещений (<a href="https://dzen.ru/a/agC4L5w_ckqc11pW" target="_blank" rel="noopener">Дзен</a>). Есть и ограничение, которое не обойдёт никакой ИИ. У фасонных частей воздуховодов в Revit нет параметра расхода или скорости воздуха для марок и спецификаций (данные 2023 года) (<a href="https://forums.autodesk.com/t5/revit-mep-forum/duct-fittings-dont-show-airflow-as-a-tag-schedule-parameter/td-p/12117970" target="_blank" rel="noopener">Autodesk Community</a>). Как ИИ справляется с русскими именами параметров и категорий в русской версии Revit, в источниках не проверено. Поэтому в запросе надо указывать имена точно, буква в букву.</p>
+<p>Из моделей Claude на 29.09.2026 актуальны Sonnet 5.5 (вышел 28.09.2026, лучше всего в чётко ограниченных повседневных задачах) и Opus 5.5 (22.09.2026, для сложной работы). Подписка Pro стоит $17 в месяц при оплате за год или $20 помесячно, и Claude Code в неё входит (<a href="https://www.anthropic.com/claude-sonnet-5-5" target="_blank" rel="noopener">Anthropic</a>; <a href="https://claude.com/pricing?r=0" target="_blank" rel="noopener">Claude</a>). Независимых тестов этих моделей именно на Revit нет. Коммерческие копилоты по сути — «посредники»: настоящая языковая модель, за которой стоят заранее написанные скрипты. Их выигрыш в том, что не нужно учить интерфейс, а не в том, что они умеют недоступное Dynamo (<a href="https://dancumberlandlabs.com/blog/revit-construction/" target="_blank" rel="noopener">Dan Cumberland Labs</a>). Из них только BIMLOGIQ/Argus заявляет инженерные сценарии: проходки для труб и воздуховодов и кратчайший путь между элементами (<a href="https://bimlogiq.com/copilot/homepage" target="_blank" rel="noopener">BIMLOGIQ</a>). Специализированного ИИ, который считал бы воздухообмен или подбирал сечения, нет ни у кого.</p>
+<h3>Правила безопасности, без которых ИИ опасен для модели</h3>
+<p>Правила выводятся из предупреждений самих разработчиков. Никогда не давать ИИ право записи в рабочий или центральный файл — только в копию. Начинать с инструментов, которые только читают. Всегда называть версию Revit, язык скрипта и точные имена параметров. Сначала просить пробный прогон, потом применение. Подтверждать каждый вызов команды на запись и не включать автоматический режим (<a href="https://github.com/LuDattilo/revit-mcp-server" target="_blank" rel="noopener">LuDattilo</a>; <a href="https://github.com/UV-Tech/revit-claude-mcp" target="_blank" rel="noopener">UV-Tech</a>). Не ставить серверы «одной командой» из чужого репозитория, не посмотрев, что они делают. Отдельные опасности MCP описаны в OWASP — проекте по безопасности программ: скрытые инструкции в описаниях инструментов и команды, способные выполнить на компьютере что угодно (<a href="https://github.com/OWASP/www-community/blob/master/pages/attacks/MCP_Tool_Poisoning.md" target="_blank" rel="noopener">OWASP</a>). Любой результат, который ИИ посчитал или записал в модель, — расходы, скорости, потери давления, позиции спецификации — нужно выборочно пересчитать независимо на нескольких помещениях и участках. Ошибка в правиле тиражируется на всю модель.</p>
+<h2>План внедрения: десять шагов от бесплатного к рискованному</h2>
+<p>План идёт от того, что ничего не стоит и ничем не грозит, к тому, что требует денег, навыков и осторожности. Нулевой шаг — развилка: дальнейшие шаги для Revit имеют смысл только при законной лицензии. Российской компании без такой лицензии разумнее сразу брать пробные версии nanoCAD BIM Вентиляция, Model Studio CS или Renga. Шаги 1, 3 (в части внешних программ), 5 и 6 применимы и там: порядок в параметрах, проверка расчётов, замер времени и скрипты, написанные ИИ, переносятся на любую программу.</p>
+<div class="tw" tabindex="0" role="region" aria-label="Таблица (прокручивается по горизонтали)"><table role="table">
+<thead>
+<tr>
+<th>Шаг</th>
+<th>Что сделать</th>
+<th>Цена</th>
+<th>Риск</th>
+<th>Что получает инженер ОВиК</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Выяснить: есть ли у организации законная лицензия Revit; что требует заказчик и экспертиза (IFC 4 до 500 МБ, реестровое ПО для госзаказа, требования КИИ и договора к передаче данных)</td>
+<td>0 ₽</td>
+<td>—</td>
+<td>Понимание, куда вкладываться: в Revit-плагины или в nanoCAD BIM, Model Studio CS, Renga</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Навести порядок: шаблон ADSK, бесплатные Dynamo-скрипты BIM2B, бесплатная «Нумерация» ModPlus (в Revit 2027 — встроенные правила нумерации); семейства российских производителей с ФОП 2021 с проверкой коннекторов до вставки</td>
+<td>0 ₽</td>
+<td>Низкий</td>
+<td>Наименования, толщина стенки, позиции и спецификация по форме 1 ГОСТ 21.110 без ручного набора</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Поставить pyRevit (и при желании бесплатный набор <a href="https://github.com/ErikFrits/EF-Tools" target="_blank" rel="noopener">EF-Tools</a>, рассчитанный в основном на Revit 2019–2023)</td>
+<td>0 ₽</td>
+<td>Низкий</td>
+<td>Площадка для своих кнопок, работает без интернета</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Взять пробные версии расчётных плагинов МЕКО и «Два Облака» на одном реальном объекте. Спросить разработчика про СП 131.13330.2025 и СП 50.13330.2024. Сверить результат с ручным расчётом на 3–5 помещениях и участках. Для отопления — бесплатный VALTEC.PRG</td>
+<td>МЕКО: от 750 ₽ за плагин, 7 900 ₽ комплект, от 2 000 ₽/мес; «Два Облака» — по запросу</td>
+<td>Низкий, если результат проверяется</td>
+<td>Аэродинамика, гидравлика, балансировка, подбор оборудования по российским нормам и каталогам</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Пакет рутины: BimStep ИОС — набор для инженерных систем (отверстия со статусами согласования, изоляция, подвесы, пространства из архитектурной модели) или «Задание на отверстия» FutureBIM</td>
+<td>BimStep: 1 000–3 000 ₽ за 3–12 месяцев</td>
+<td>Средний: отверстия у клапанов и соседних воздуховодов проверять вручную</td>
+<td>Задания на отверстия и согласование без переписки</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Замерить «до/после» на пилотном объекте: время на спецификацию, задания на отверстия, аэродинамику</td>
+<td>0 ₽</td>
+<td>—</td>
+<td>Свои цифры вместо рекламных «3–5 раз»</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Попросить законно доступную языковую модель (в России — GigaChat или YandexGPT; Claude и ChatGPT — там, где они официально работают) написать скрипт pyRevit или Dynamo, который только читает модель: выгрузка пространств с расходами в Excel, поиск пустых параметров, неподключённых элементов. Проект заказчика в зарубежный ИИ без проверки договора не отправлять</td>
+<td>0 ₽ – подписка</td>
+<td>Низкий: скрипт ничего не меняет</td>
+<td>Отчёты и проверки модели за минуты</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Дать ИИ доступ к модели только на чтение: встроенный Assistant или официальный MCP-сервер Autodesk (Revit 2027 и учётная запись Autodesk; российским компаниям недоступны) либо бесплатный набор AUTOM8LABS на 37 инструментов чтения</td>
+<td>0 ₽ + подписка ИИ</td>
+<td>Для модели низкий, но её данные уходят в облако ИИ</td>
+<td>Вопросы к модели обычным языком, экспорт спецификаций и видов</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Дать ИИ право записи: сервер с пробным прогоном и откатом (KenLP) или pyRevit + Claude Code. Только копия модели, подтверждение каждого шага, адрес 127.0.0.1. Задачи: массовое заполнение параметров, расход по кратности L = n × V после проверки правила на 3–5 помещениях</td>
+<td>Подписка ИИ</td>
+<td>Высокий</td>
+<td>Массовые правки, которые вручную заняли бы дни</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Собственный плагин на C# — только для задачи, которая повторяется во всей команде, с учётом версии .NET под свою версию Revit</td>
+<td>Часы–дни работы специалиста с ИИ</td>
+<td>Средний</td>
+<td>Надёжный инструмент на годы (путь КРОК: Dynamo → Python → плагин)</td>
+</tr>
+</tbody>
+</table></div>
+<p>Порядок выбран не случайно. Шаги 1–4 дают основной выигрыш именно в ОВиК: расчёты по СП, спецификации, отверстия. Шаги 6–9 добавляют ИИ туда, где рутина уже упорядочена: скрипт, написанный ИИ, бесполезен, если параметры в модели названы как попало. Шаг 5 стоит посередине сознательно. Ни одного независимого замера «до/после» для ОВиК-документации в Revit в открытых источниках нет. Кейсы ПИК Digital и КРОК описывают выигрыш словами, без цифр, а все цифры в процентах принадлежат вендорам. Решать, окупается ли следующий шаг, стоит по собственному замеру.</p>
+<h2>Где источники расходятся и почему это важно</h2>
+<p>Часть фактов в источниках противоречит друг другу. Ниже они собраны в таблицу, чтобы ни одно расхождение не было снято молча.</p>
+<div class="tw" tabindex="0" role="region" aria-label="Таблица (прокручивается по горизонтали)"><table role="table">
+<thead>
+<tr>
+<th>Вопрос</th>
+<th>Версия А</th>
+<th>Версия Б</th>
+<th>Как это читать</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Дата выхода Revit 2027</td>
+<td>07.04.2026: блог Autodesk «что нового» датирован этим днём, и первое обновление 2027.0.1 в списке Autodesk тоже помечено 07.04.2026 (<a href="https://www.autodesk.com/blogs/aec/2026/04/07/whats-new-in-revit-2027/" target="_blank" rel="noopener">Autodesk</a>; <a href="https://help.autodesk.com/view/RVT/2027/ENU/?guid=RevitReleaseNotes_2027updates_html" target="_blank" rel="noopener">Autodesk Help</a>)</td>
+<td>10.04.2026 — объявление для разработчиков (<a href="https://blog.autodesk.io/revit-2027-and-autodesk-assistant-release-announcement/" target="_blank" rel="noopener">Autodesk Platform Services</a>)</td>
+<td>Вероятно, дата выпуска и дата анонса; на выводы не влияет</td>
+</tr>
+<tr>
+<td>Сроки ТИМ для бюджетных объектов</td>
+<td>С 01.01.2022 по ПП № 331 (<a href="https://infars.ru/blog/popadaet-li-vasha-organizatsiya-pod-trebovaniya-tim_-razbor-po-tipam-obektov-i-srokam/" target="_blank" rel="noopener">ИНФАРС</a>)</td>
+<td>ПП № 962 от 27.05.2022 перенесло обязательное применение на госстройках на 01.03.2023 (<a href="https://sroportal.ru/news/federal/tim-podozhdyot-obyazatelnoe-primenenie-informacionnoj-modeli-na-gosstrojkax-otlozhili-na-god/" target="_blank" rel="noopener">Портал «Саморегулирование»</a>)</td>
+<td>Первичные тексты исследователи прочитать не смогли; смотреть действующую редакцию ПП № 331</td>
+</tr>
+<tr>
+<td>Дата заявления НОПРИЗ о «красной линии» 31.12.2025</td>
+<td>23.04.2025 (<a href="https://www.c-o-k.ru/market_news/ispolzovanie-inostrannogo-softa-v-stroitelnoy-otrasli-s-2026-goda-mogut-zapretit" target="_blank" rel="noopener">ЦОК</a>)</td>
+<td>27.03.2025 (другое изложение) (<a href="https://ancb.ru/publication/read/19309" target="_blank" rel="noopener">ancb.ru</a>)</td>
+<td>Главное неизвестно — итог самой инициативы</td>
+</tr>
+<tr>
+<td>Вступление СП 131.13330.2025</td>
+<td>08.09.2025 (<a href="https://www.abok.ru/for_spec/articles.php?nid=9259" target="_blank" rel="noopener">АВОК</a>)</td>
+<td>09.09.2025 (<a href="https://nkprom.ru/news/s-9-sentyabrya-2025-goda-vveden-v-deystvie-novyy-svod-pravil-sp-131-13330-2025-23-01-99-stroitelnaya/" target="_blank" rel="noopener">НКПРОМ</a>)</td>
+<td>Разница в день; важно, что климатическая база сменилась</td>
+</tr>
+<tr>
+<td>Статус Autodesk Assistant</td>
+<td>Tech Preview (<a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-WhatsNew/files/GUID-68D8FE6D-C5B0-4503-AE27-02C715BAC25B.htm" target="_blank" rel="noopener">Autodesk Help</a>)</td>
+<td>«Общедоступен» с 2027.3 — пост в LinkedIn неустановленного автора (<a href="https://www.linkedin.com/feed/update/urn:li:activity:7505764845233815552" target="_blank" rel="noopener">LinkedIn</a>)</td>
+<td>Считать пробной функцией до официального подтверждения</td>
+</tr>
+<tr>
+<td>Может ли MCP-сервер Autodesk менять модель</td>
+<td>Только чтение, 7 инструментов (<a href="https://www.autodesk.com/blogs/aec/2026/06/17/revit-public-mcp-server/" target="_blank" rel="noopener">Autodesk, 17.06.2026</a>)</td>
+<td>Через Assistant — массовые правки параметров и создание элементов (<a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-WhatsNew/files/GUID-97697CBF-0E11-484E-96E5-4277E3E8D61F.htm" target="_blank" rel="noopener">Autodesk Help</a>; <a href="https://dynamobim.org/dynamo-4-2-in-revit-2027-3-autodesk-assistant-dynamo-mcp/" target="_blank" rel="noopener">блог Dynamo</a>)</td>
+<td>Похоже, у встроенного Assistant набор шире, чем у публичного сервера; прямого подтверждения нет</td>
+</tr>
+<tr>
+<td>Assistant, «Auto-Balancing» в Revit 2026</td>
+<td>Есть — по конкуренту ArchiLabs (<a href="https://archilabs.ai/posts/whats-new-in-revit-2026" target="_blank" rel="noopener">ArchiLabs</a>)</td>
+<td>На страницах Autodesk не подтверждено</td>
+<td>Не рассчитывать на эти функции в Revit 2026</td>
+</tr>
+<tr>
+<td>Подбор труб по скорости в Revit</td>
+<td>Не умеет (2019) (<a href="https://isicad.ru/ru/articles.php?article_num=20497" target="_blank" rel="noopener">isicad</a>)</td>
+<td>Умеет по скорости и трению (2020) (<a href="https://muratovbim.pro/blog/revit-avtomaticheskiy_podbor_secheniy_trub_i_vozdukhovodov/" target="_blank" rel="noopener">Муратов</a>)</td>
+<td>Разные версии Revit; в 2027 есть MEP Sizing Calculator</td>
+</tr>
+<tr>
+<td>MagiCAD и Россия</td>
+<td>На русской странице MagiCAD — прямое заявление о прекращении поставок из-за санкций ЕС (<a href="https://www.magicad.com/ru/contact-sales/" target="_blank" rel="noopener">MagiCAD RU</a>)</td>
+<td>Вторая проверка на главной странице такого заявления не нашла (<a href="https://www.magicad.com/" target="_blank" rel="noopener">MagiCAD</a>)</td>
+<td>Дистрибьюторы и Ридан подтверждают: поставок нет</td>
+</tr>
+<tr>
+<td>Цена MagiCAD</td>
+<td>По запросу (<a href="https://www.capterra.com/p/187642/MagiCAD-Software/" target="_blank" rel="noopener">Capterra</a>)</td>
+<td>Около $1 500 в год (<a href="https://www.g2.com/products/magicad/reviews" target="_blank" rel="noopener">G2</a>); «от 552 €» и «в наличии» рядом с «не поставляется» (<a href="https://buildsoft.ru/product/magicad/magicad-dlya-revit-kommercheskie-litsenzii-i-podpiska/" target="_blank" rel="noopener">БилдСофт</a>)</td>
+<td>Для России вопрос неактуален</td>
+</tr>
+<tr>
+<td>Цена Glyph</td>
+<td>На странице EvolveLAB: $97/мес помесячно или $600 в год ($50/мес), студентам $99 в год (<a href="https://www.evolvelab.io/glyph" target="_blank" rel="noopener">EvolveLAB</a>); две проверки записали это по-разному, но суммы совпадают</td>
+<td>Магазин Chaos: цена только через отдел продаж (<a href="https://www.chaos.com/evolvelab-shop" target="_blank" rel="noopener">Chaos</a>)</td>
+<td>Официальная цена может отличаться от публичной, уточнять у продавца</td>
+</tr>
+<tr>
+<td>Smart Annotation (BIMLOGIQ)</td>
+<td>Бесплатно, проба 30 дней (<a href="https://rvtplugins.com/posts/bimlogiq/smart-annotation-mep/777898712817092915" target="_blank" rel="noopener">RVT Plugins</a>); в выдаче поиска встречалось $300 в год (2021) (<a href="https://revitaddons.blogspot.com/2021/11/smart-annotation-mep.html" target="_blank" rel="noopener">Revit Add-Ons</a>)</td>
+<td>Тарифы PRO и Enterprise по запросу, проба 14 дней (<a href="https://bimlogiq.com/product/smart-annotation.html" target="_blank" rel="noopener">BIMLOGIQ</a>)</td>
+<td>Тарифы менялись</td>
+</tr>
+<tr>
+<td>Число инструментов DiRoots One</td>
+<td>8 (<a href="https://www.diroots.com/" target="_blank" rel="noopener">DiRoots</a>)</td>
+<td>«Более 10 бесплатных» (<a href="https://atomatiq.io/blog/best-revit-plugins-and-add-ins" target="_blank" rel="noopener">Atomatiq</a>)</td>
+<td>Верить официальной странице</td>
+</tr>
+<tr>
+<td>Пороги ст. 146 УК РФ</td>
+<td>100 тыс. и 1 млн ₽ (<a href="https://www.consultant.ru/document/cons_doc_LAW_10699/b683408102681707f2702cff05f0a3025daab7ab/" target="_blank" rel="noopener">КонсультантПлюс</a>)</td>
+<td>50 тыс. и 250 тыс. ₽ (<a href="https://autodesk.datasystem.ru/pages/otvetstvennost/" target="_blank" rel="noopener">страница дилера</a>)</td>
+<td>Страница дилера устарела</td>
+</tr>
+<tr>
+<td>GitHub Copilot в России</td>
+<td>Ограничен санкциями — ответ рядового участника сообщества GitHub (<a href="https://github.com/orgs/community/discussions/182386" target="_blank" rel="noopener">GitHub</a>)</td>
+<td>«Работает, проблема только в оплате» — платные публикации (<a href="https://companies.rbc.ru/news/WGY1LX0J9n/github-copilot-v-rossii-kak-oplatit-podpisku-i-nachat-rabotu-v-2026/" target="_blank" rel="noopener">РБК Компании</a>)</td>
+<td>Официальной позиции GitHub нет</td>
+</tr>
+<tr>
+<td>Доля Autodesk в России</td>
+<td>Около 50 % строительного сегмента (АРПП, 2024) (<a href="https://www.cnews.ru/news/top/2024-04-19_autocad_v_rossii_bolshe_ne_rabotaet" target="_blank" rel="noopener">CNews</a>)</td>
+<td>Около 60 % рынка (Минстрой, 2022) (<a href="https://telesputnik.ru/materials/gov/news/minstroy-100-importnogo-po-dlya-proektirovaniya-v-stroitelstve-mozhet-byt-zameshcheno-otechestvennym" target="_blank" rel="noopener">Телеспутник</a>); 70 % организаций на иностранном ПО (НОПРИЗ, 2025) (<a href="https://www.c-o-k.ru/market_news/ispolzovanie-inostrannogo-softa-v-stroitelnoy-otrasli-s-2026-goda-mogut-zapretit" target="_blank" rel="noopener">ЦОК</a>)</td>
+<td>Разные показатели и годы</td>
+</tr>
+</tbody>
+</table></div>
+<h2>Заключение</h2>
+<p>Главный вывод исследования — обзор ищет выигрыш не там. Самые разрекламированные ИИ-инструменты делают здания и картинки. Инженер ОВиК теряет время на другом: на пересчёте по нормам, наименованиях, позициях и отверстиях. Здесь работают детерминированные инструменты — они на одних и тех же данных всегда дают один и тот же ответ, без «творчества» языковой модели. Место ИИ — между ними: он пишет «клей» из скриптов, отвечает на вопросы к модели и быстро собирает прототип. Слабое звено при этом — не ИИ, а входные данные. Ни один найденный расчётный инструмент не подтвердил переход на климатическую базу СП 131.13330.2025, и никакой ИИ этого не исправит. Поэтому ценность инженера смещается от ручного набора к проверке: правила, по которому скрипт заполнил модель, редакции норм в плагине, выборочного пересчёта результата.</p>
+<p>Для российского инженера у этой истории есть второй, стратегический слой. Каждая новая ИИ-функция Autodesk — Assistant, официальный MCP-сервер, переход работы в Forma — завязана на учётную запись и облако. Значит, разрыв между мировой практикой Revit и тем, что законно доступно российской компании, с каждым выпуском будет расти, а не сокращаться. Вкладываться поэтому выгоднее в то, что переживёт смену программы: единые параметры (ADSK и ФОП, которые затем сопоставляются со свойствами IFC), умение отдать корректный IFC 4, логику собственных скриптов и привычку измерять «до/после». Логику скриптов можно переписать под программный интерфейс Renga, которым ИИ-агенты уже учатся пользоваться (<a href="https://habr.com/ru/articles/1019272/" target="_blank" rel="noopener">Хабр</a>), или под визуальное программирование nanoNODE в nanoCAD (<a href="https://companies.rbc.ru/news/vRbLkBgPIE/nanosoft-vyipustila-na-ryinok-obnovlennuyu-sapr-platformu-nanocad-26/" target="_blank" rel="noopener">РБК Компании</a>). Тот, кто наведёт порядок в данных и научится проверять ИИ, получит выигрыш в любой программе. Тот, кто купит «ускорение в 3–5 раз» по рекламной таблице, рискует получить только новую зависимость.</p>
+<footer><a href="../" target="_self">К оглавлению витрины</a></footer>
+</main>
+</body>
+</html>
