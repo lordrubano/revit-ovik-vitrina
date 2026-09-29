@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Revit под российские нормы: настройка и свои инструменты</title>
+<style>
+:root{--bg:#f6f7f5;--fg:#1d2420;--muted:#5b665f;--card:#ffffff;--line:#d5dad6;--link:#1f6b4a;--th:#e9eee9;--zebra:#f3f6f3;--code:#eef1ee}
+@media (prefers-color-scheme:dark){:root{--bg:#141a17;--fg:#e4e9e5;--muted:#9aa69e;--card:#1b231f;--line:#37423b;--link:#7fd0a6;--th:#232d27;--zebra:#1e2722;--code:#232d27}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;padding:32px 16px 64px;background:var(--bg);color:var(--fg);font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+main{max-width:760px;margin:0 auto}
+h1{font-size:1.9rem;line-height:1.25;margin:0 0 .4em}
+h2{font-size:1.4rem;line-height:1.3;margin:2.2em 0 .6em;padding-top:.4em;border-top:1px solid var(--line)}
+h3{font-size:1.15rem;line-height:1.35;margin:1.6em 0 .5em}
+p{margin:0 0 1em}
+.date{color:var(--muted);font-size:.95rem;margin-bottom:1.6em}
+a{color:var(--link);text-underline-offset:2px;overflow-wrap:anywhere}
+a:hover{text-decoration-thickness:2px}
+strong{font-weight:650}
+ul,ol{padding-left:1.3em;margin:0 0 1em}
+li{margin:.25em 0}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 0 1.4em;border:1px solid var(--line);border-radius:8px;background:var(--card)}
+.tw:focus{outline:2px solid var(--link);outline-offset:2px}
+table{border-collapse:collapse;width:100%;min-width:640px;font-size:.88rem;line-height:1.45}
+th,td{border:1px solid var(--line);padding:.5em .65em;text-align:left;vertical-align:top}
+th{background:var(--th);font-weight:650;white-space:nowrap}
+tbody tr:nth-child(even){background:var(--zebra)}
+td a{word-break:break-word}
+code{background:var(--code);border-radius:4px;padding:.1em .35em;font-size:.9em;overflow-wrap:anywhere}
+hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+footer{margin-top:3em;color:var(--muted);font-size:.9rem;border-top:1px solid var(--line);padding-top:1em}
+@media (max-width:600px){body{padding:16px 16px 48px;font-size:16px}h1{font-size:1.55rem}h2{font-size:1.25rem}}
+@media print{body{background:#fff;color:#000}.tw{overflow:visible}}
+</style>
+</head>
+<body>
+<main>
+<h1>Revit учится российским нормам через шаблон и надстройки</h1>
+<p class="date">Исследование от 29.09.2026</p>
+<p>Одной настройки, которая «включает» российские нормы в Autodesk Revit, не существует. Инженер ОВиК (отопления, вентиляции и кондиционирования) собирает их из пяти слоёв, и готовыми из них закрыты три. Русский интерфейс включается бесплатно: достаточно дописать ключ <code>/language RUS</code> в ярлык программы. Оформление по ГОСТ даёт бесплатный шаблон ADSK от компании BIM2B вместе с файлом общих параметров. В шаблоне уже настроены спецификации по форме 1 ГОСТ 21.110, листы общих данных, обозначения систем «П» и «В» и основная надпись. Расчётов по сводам правил (СП) сам Revit не делает: его встроенные методики американские, по справочнику ASHRAE. Эти расчёты берут на себя российские надстройки: МЕКО (Revit 2020–2027, от 750 ₽ за плагин) и «Два Облака» (от 15 000 ₽ в месяц). Модель для экспертизы выгружают штатным экспортёром в открытый формат IFC 4 с таблицей соответствия параметров и проверяют отдельным плагином. Готовыми средствами не закрыты пять участков работы:</p>
+<ul>
+<li>воздухообмен по нормам прямо в помещениях модели;</li>
+<li>схемы систем по ГОСТ 21.602 (настоящую косоугольную аксонометрию Revit не строит);</li>
+<li>автоматическое заполнение таблиц общих данных;</li>
+<li>автопроверка модели по типовым замечаниям экспертизы;</li>
+<li>задания смежникам, кроме заданий на отверстия.</li>
+</ul>
+<p>Вдобавок ни один найденный расчётный инструмент не подтвердил переход на климат нового СП 131.13330.2025, а основную надпись шаблона надо сверить с ГОСТ Р 21.101-2026, который действует с 01.04.2026. Дописывать Revit можно, но возможности неравные. Встроить внутрь программы свою формулу разрешено только для потерь давления в воздуховодах и трубах, и только на языке C#. Теплопотерям, климату и воздухообмену нужен собственный расчётный модуль: он берёт данные из модели и записывает результат в её параметры. Для пилота лучше всего подходит скрипт «Воздухообмен по нормам» для бесплатной надстройки pyRevit. Он закрывает подтверждённую боль и опирается на данные, которые в модели уже есть. Проверить его можно ручным расчётом на пяти помещениях. Его ядро, таблица норм со ссылками на пункты, потом пригодится для таблиц общих данных, автопроверки и ИИ-помощника.</p>
+<h2>Российская норма в Revit складывается из пяти слоёв</h2>
+<p>Revit — программа Autodesk для информационного моделирования зданий (BIM). Здание в ней строится как трёхмерная модель. У каждого воздуховода, решётки и вентилятора есть не только форма, но и данные: расход, размер, марка, система. Чертежи и спецификации (таблицы оборудования, изделий и материалов) Revit собирает из этих данных сам. Поэтому «российскость» программы зависит не от одного переключателя, а от того, как устроены данные и правила их обработки. Слоёв пять:</p>
+<ol>
+<li><strong>Язык интерфейса.</strong></li>
+<li><strong>Шаблон и параметры.</strong> Шаблон — стартовый файл проекта с готовыми видами, спецификациями и штампом. Параметр — «поле» с данными у элемента. Общий словарь таких полей называется файлом общих параметров (ФОП). У каждого поля в нём постоянный код-идентификатор (GUID), и по нему шаблон, библиотечные объекты и спецификации понимают поле одинаково.</li>
+<li><strong>Семейства</strong> — библиотечные объекты вроде решётки или клапана. У семейства есть геометрия, параметры и коннекторы. Коннектор — точка подключения, через которую семейство соединяется с воздуховодом или трубой и передаёт расход.</li>
+<li><strong>Расчёты.</strong></li>
+<li><strong>Выгрузка в экспертизу</strong> цифровой информационной модели (ЦИМ) — той модели, которую сдают в экспертизу и заказчику.</li>
+</ol>
+<p>Главная трудность — расчёты: всё встроенное в Revit сделано по американской школе. Тепловые нагрузки Revit считает по справочнику ASHRAE (Американского общества инженеров по отоплению, охлаждению и кондиционированию) методом RTS (<a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-Analyze/files/GUID-CAEB49E4-364D-49EE-98EA-E14E5FA7C82B.htm" target="_blank" rel="noopener">Autodesk Help 2027</a>). Климат берётся из базы более 4 400 метеостанций по справочнику ASHRAE 2005 года. Расчётная температура отопления там определяется как 99 % годовой обеспеченности (<a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-Analyze/files/GUID-CE607F67-D169-4E6D-9B7F-35BEE9101BEC.htm" target="_blank" rel="noopener">Autodesk Help 2027</a>), а не так, как в СП 131. Потери давления в фасонных частях воздуховодов Revit берёт из американской базы ASHRAE Duct Fitting Database (<a href="https://help.autodesk.com/cloudhelp/2026/ENU/Revit-MEPEng/files/GUID-3D31AB56-ADDD-48F7-AA6F-C63A8BA821BD.htm" target="_blank" rel="noopener">Autodesk Help 2026</a>). Сам инструмент расчёта нагрузок в Revit 2022–2025 по умолчанию выключен и возвращается правкой служебного файла Revit.ini (<a href="https://help.autodesk.com/cloudhelp/2025/ENU/Revit-Analyze/files/GUID-2DD2759D-3E3A-4AE7-BB37-0DF53981591E.htm" target="_blank" rel="noopener">Autodesk Help 2025</a>). Расхождения с европейской практикой давно известны. Сравнение Revit 2015 с норвежской редакцией европейской нормы EN 12831 нашло заниженную по умолчанию расчётную температуру, отсутствие потерь на вентиляцию и мостиков холода (<a href="https://vbn.aau.dk/ws/portalfiles/portal/233775444/paper_700.pdf" target="_blank" rel="noopener">Aalborg University</a>). Работа старая, но показывает, что отличия системные. Вывод: цифры Revit годятся для прикидки «для себя», но не как расчёт по СП для экспертизы. Российские методики в Revit добавляют надстройками (плагинами). Это дополнительные программы, которые встраиваются в Revit и добавляют в его ленту новые кнопки.</p>
+<p>Нормы, под которые всё это настраивается, за два года заметно обновились:</p>
+<ul>
+<li><strong>СП 50.13330.2024</strong> «Тепловая защита зданий» действует с 16.06.2024 (<a href="https://base.garant.ru/409274974/" target="_blank" rel="noopener">Гарант</a>).</li>
+<li><strong>СП 60.13330.2020</strong> «Отопление, вентиляция и кондиционирование воздуха» действует с Изменением № 5 с 25.02.2025 (<a href="https://base.garant.ru/411596469/" target="_blank" rel="noopener">Гарант</a>).</li>
+<li><strong>СП 131.13330.2025</strong> «Строительная климатология» заменил редакцию 2020 года (<a href="https://base.garant.ru/412664133/" target="_blank" rel="noopener">Гарант</a>). Климатические данные в нём пересчитаны по 2019–2023 годам, а число пунктов выросло <strong>со 110 до 440</strong> (<a href="https://www.abok.ru/for_spec/articles.php?nid=9259" target="_blank" rel="noopener">АВОК</a>).</li>
+<li><strong>ГОСТ Р 21.101-2026</strong> — главный стандарт оформления проектной и рабочей документации — <strong>действует с 01.04.2026</strong> вместо редакции 2020 года (<a href="https://protect.gost.ru/gost/details/17bc12e8-6579-4145-b141-56855e772e7f" target="_blank" rel="noopener">Росстандарт</a>). В нём появились термины «QR-код», «GUID» и «XML-документ», а текстовые документы разрешено оформлять без рамок (<a href="https://www.nep.expert/info/gost-r-21-101-2026-izmeneniya-2026-goda/" target="_blank" rel="noopener">nep.expert</a>).</li>
+<li><strong>ГОСТ 21.602-2016</strong> — отраслевой стандарт на рабочие чертежи ОВиК — новых редакций не получил (<a href="https://www.consultant.ru/cons/cgi/online.cgi?req=doc&amp;base=STR&amp;n=20681" target="_blank" rel="noopener">КонсультантПлюс</a>).</li>
+</ul>
+<p>Отсюда первый вопрос к любому готовому или заказному инструменту: по какой редакции норм он считает и видно ли это в результате. Климат СП 131.13330.2025 пока не подтвердил ни один найденный инструмент. Плагин теплопотерь на rubim.tech, например, ссылается на редакцию 2020 года (<a href="https://rubim.tech/%D1%80%D0%B0%D1%81%D1%87%D1%91%D1%82-%D1%82%D0%B5%D0%BF%D0%BB%D0%BE%D0%BF%D0%BE%D1%82%D0%B5%D1%80%D1%8C-%D0%B2-revit/" target="_blank" rel="noopener">RuBIM.Tech</a>).</p>
+<h2>Часть 1. Двенадцать шагов настройки из готового: оформление почти бесплатно, расчёты за деньги</h2>
+<p>Сначала о выборе версии Revit, потому что от неё зависят все надстройки. Revit 2027 вышел весной 2026 года и работает только в 64-разрядной Windows 11 (<a href="https://blog.autodesk.io/revit-2027-and-autodesk-assistant-release-announcement/" target="_blank" rel="noopener">Autodesk Platform Services</a>). Кроме того, все надстройки для него должны быть пересобраны под технологическую основу Microsoft .NET 10 (<a href="https://blog.autodesk.io/revit-2027-sdk-net-10-api-changes-and-additions/" target="_blank" rel="noopener">Autodesk Platform Services</a>). .NET — платформа, на которой собираются программы для Windows. Надстройка, собранная под одну её версию, в Revit с другой версией просто не появится в ленте. Взамен 2027 даёт полезные для ОВиК новинки: калькулятор подбора сечений MEP Sizing Calculator, зоны систем System-Zones и встроенные правила нумерации (<a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-WhatsNew/files/GUID-C81929D7-02CB-4BF7-A637-9B98EC9EB38B.htm" target="_blank" rel="noopener">Autodesk Help 2027</a>). Поддержку 2027 прямо заявляют МЕКО, BimStep, BIM2B Template Tools и ModPlus. У «Два Облака» на странице цен перечислены только версии 2019–2025 (<a href="https://dvaoblaka.ru/revit/price" target="_blank" rel="noopener">Два Облака</a>). Бесплатная платформа для скриптов pyRevit поддерживает 2027 с версии 6.0 (<a href="https://discourse.pyrevitlabs.io/t/pyrevit-6-0-0/9845" target="_blank" rel="noopener">форум pyRevit</a>). Однако у одного пользователя на 2027 не строилась лента (<a href="https://github.com/pyrevitlabs/pyRevit/issues/3441" target="_blank" rel="noopener">GitHub pyRevit</a>). Практический вывод: осенью 2026 года Revit 2025 или 2026 — более спокойная основа. На 2027 стоит переходить, когда каждая нужная надстройка на нём проверена.</p>
+<p>Сами шаги собраны в таблицу. Цены взяты со страниц продавцов на 29.09.2026. Пометка «цена не указана» значит, что на странице её нет.</p>
+<div class="tw" tabindex="0" role="region" aria-label="Таблица (прокручивается по горизонтали)"><table role="table">
+<thead>
+<tr>
+<th>Шаг</th>
+<th>Что сделать</th>
+<th>Где взять, сколько стоит</th>
+<th>Версии Revit</th>
+<th>Чего не хватает и на что смотреть</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1. Русский интерфейс</td>
+<td>В свойствах ярлыка Revit, в конце строки «Объект», дописать <code>/language RUS</code>. Этот ключ сильнее всех остальных настроек. Без ключа язык при установке выбирается по региональным настройкам Windows (<a href="https://help.autodesk.com/cloudhelp/2022/RUS/Revit-Installation/files/GUID-BD09C1B4-5520-475D-BE7E-773642EEBD6C.htm" target="_blank" rel="noopener">Справка Autodesk</a>; <a href="https://resources.imaginit.com/support-blog/how-does-revit-choose-the-default-language-during-installation" target="_blank" rel="noopener">IMAGINiT</a>)</td>
+<td>Бесплатно, переустановка не нужна (<a href="https://resources.imaginit.com/support-blog/change-revit-to-other-languages" target="_blank" rel="noopener">IMAGINiT</a>)</td>
+<td>Механизм описан в справке 2022 года; русская справка есть для 2026 и 2027</td>
+<td>Официальный перечень языков интерфейса 2027 прочитать не удалось</td>
+</tr>
+<tr>
+<td>2. Русский контент Autodesk</td>
+<td>При выборочной установке отметить языковой пакет контента. Библиотеку семейств скачать в Autodesk Account: «Все продукты и службы → Revit → Доступно для загрузки → Библиотеки» (<a href="https://help.autodesk.com/cloudhelp/2026/RUS/Revit-Installation/files/GUID-A69690A6-62F3-48C6-9F34-043051F815CE.htm" target="_blank" rel="noopener">Справка Autodesk 2026</a>)</td>
+<td>В составе Revit</td>
+<td>2026, 2027</td>
+<td>Что лежит в русской библиотеке сейчас, не проверено. Для ГОСТ её мало: нет формы 1 и российских обозначений систем, поэтому нужен шаг 3</td>
+</tr>
+<tr>
+<td>3. Шаблон ОВ и ФОП</td>
+<td>Зарегистрироваться на bim2b.ru/adsk и получить письмо со ссылками на шаблоны, семейства и ФОП (<a href="https://forum.bim2b.ru/adsk-faq/gde-skachat-adsk-shablony-revit/" target="_blank" rel="noopener">форум BIM2B</a>). Открыть шаблон в своей версии Revit, заполнить данные организации</td>
+<td>Бесплатно (<a href="https://bim2b.ru/product/adsk-shablon-revit-ov/" target="_blank" rel="noopener">BIM2B</a>)</td>
+<td>Шаблон «2021» подходит «для любого Revit 2021+»; его открывали в Revit 2026 (<a href="https://forum.bim2b.ru/api/ne-rabotayut-makrosy-shablona-adsk-v-revite-2026/" target="_blank" rel="noopener">форум BIM2B</a>)</td>
+<td>Дата последней редакции не указана. Обновления под ГОСТ Р 21.101-2026 не найдено. Есть альтернатива — шаблоны CSD, но их версии и даты не указаны (<a href="https://csd.ru/useful-materials/shablony/" target="_blank" rel="noopener">CSD</a>)</td>
+</tr>
+<tr>
+<td>4. Наименования, толщина стенки, количества</td>
+<td>Выбрать один вариант: плагин BIM2B Template Tools 3.0.1; бесплатные Dynamo-скрипты BIM2B (8 штук) (<a href="https://bim2b.ru/product-category/po/" target="_blank" rel="noopener">BIM2B</a>); плагин МЕКО «Наименование воздуховодов», который считает толщину стенки по прил. К СП 60 и площадь в м² (<a href="https://www.mekopro.com/plugin-naimenovanie-vozduhovod" target="_blank" rel="noopener">МЕКО</a>)</td>
+<td>Template Tools — подписка на 3/6/12 месяцев, цена не указана; старая версия 2.1.4 бесплатна, но без поддержки (<a href="https://bim2b.ru/product/bim2b-template-tools/" target="_blank" rel="noopener">BIM2B</a>). МЕКО — от 750 ₽</td>
+<td>Template Tools — 2021–2027; МЕКО — 2020–2027</td>
+<td>На форуме жалуются: команда «Схема трубопроводов» падала в Revit 2023, воздуховоды считаются погонными метрами, а нужны м² (<a href="https://forum.bim2b.ru/adsk/plagin-bim2b-idei-i-zamechaniya/" target="_blank" rel="noopener">форум BIM2B</a>)</td>
+</tr>
+<tr>
+<td>5. Нумерация позиций</td>
+<td>Бесплатный плагин ModPlus «Нумерация» (<a href="https://modplus.org/ru/revitplugins/mprnumbering" target="_blank" rel="noopener">ModPlus</a>) или встроенные правила нумерации Revit 2027</td>
+<td>Бесплатно</td>
+<td>ModPlus поддерживает 2027 с 09.04.2026 (<a href="https://modplus.org/ru/changestory" target="_blank" rel="noopener">ModPlus</a>)</td>
+<td>Если элементы собраны в группы Revit, у параметра позиции надо разрешить разные значения в экземплярах группы (<a href="https://muratovbim.pro/blog/revit-spetsifikatsiya_vozdukhovodov-truboprovodov/" target="_blank" rel="noopener">Муратов</a>)</td>
+</tr>
+<tr>
+<td>6. Российский ряд размеров</td>
+<td>В настройках воздуховодов (Mechanical Settings → Duct Settings) оставить в подборе только диаметры ГОСТ Р 70349-2022: 100, 125, 160, 200, 250, 315, 355, 400, 450, 500, 560, 630, 710, 800, 900, 1000, 1120, 1250, 1400, 1600, 1800, 2000 мм (<a href="https://allgosts.ru/amp/91/140/gost_r_70349-2022" target="_blank" rel="noopener">allgosts</a>). Для этого служат флажки «Use in Sizing» (<a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-MEPEng/files/GUID-42A2BFEA-33A0-4B67-A0D3-5D5F385B6E9A.htm" target="_blank" rel="noopener">Autodesk Help 2027</a>)</td>
+<td>Бесплатно, вручную</td>
+<td>Все</td>
+<td>Сам алгоритм подбора остаётся американским</td>
+</tr>
+<tr>
+<td>7. Семейства оборудования</td>
+<td>Брать семейства шаблона и производителей на ФОП 2021+ (например, VALTEC — 28 семейств (<a href="https://valtec.ru/news/obnovlenie_linejki_bim_modelej.html" target="_blank" rel="noopener">VALTEC</a>)), а также из BIMLIB (<a href="https://bimlib.pro/revit" target="_blank" rel="noopener">BIMLIB</a>). До вставки проверять коннекторы, версию ФОП и вес файла</td>
+<td>Бесплатно. Массовую замену параметров в старой библиотеке делает BFSP Replacer: 1 929 семейств за 2 дня, цена по запросу (<a href="https://bim2b.ru/obrabotka-korporativnoy-biblioteki-revit-1929-semeystv-za-2-dnya/" target="_blank" rel="noopener">BIM2B</a>)</td>
+<td>Разные</td>
+<td>Часть каталогов сделана под Revit 2017 и ФОП 2017 (<a href="https://bimlib.pro/articles/obzor-bim-modeley-ventilyatsionnykh-sistem-kompanii-shuft" target="_blank" rel="noopener">BIMLIB</a>). Проверки семейств «по правилам» нет</td>
+</tr>
+<tr>
+<td>8. Пространства, изоляция, подвесы, отверстия</td>
+<td>Пакет BimStep для инженерных систем: пространства из архитектурной модели, изоляция, подвесы, отверстия со статусами согласования, анализ открытых коннекторов (<a href="https://www.bimstep.com/ru-mep" target="_blank" rel="noopener">BimStep</a>)</td>
+<td>1 000–3 000 ₽ за 3–12 месяцев, пробный период 14 дней (<a href="https://www.bimstep.com/ru-shop" target="_blank" rel="noopener">BimStep</a>)</td>
+<td>2019–2027</td>
+<td>Задания смежникам, кроме отверстий, не автоматизированы</td>
+</tr>
+<tr>
+<td>9. Расчёты по СП</td>
+<td>МЕКО: аэродинамика, гидравлика, проверка скоростей, толщина стенки. «Два Облака»: теплопотери, гидравлика, аэродинамика, дымоудаление по методике ВНИИПО, подбор оборудования (<a href="https://dvaoblaka.ru/revit/ventilation" target="_blank" rel="noopener">Два Облака</a>). Anlax: формула Альтшуля, местные сопротивления по Идельчику, диктующая ветка (<a href="https://anlax.org/technology/kb/aerodinamicheskij-raschyot-vozduhovodov-instrukcziya-po-ispolzovaniyu/" target="_blank" rel="noopener">Anlax</a>)</td>
+<td>МЕКО: плагин от 750 ₽, комплект 7 900 ₽, подписка от 2 000 ₽/мес. (<a href="https://www.mekopro.com/plugin" target="_blank" rel="noopener">МЕКО</a>). «Два Облака»: 15 000 ₽/мес. для физлиц, 25 000 ₽/мес. для организаций (<a href="https://dvaoblaka.ru/revit/price" target="_blank" rel="noopener">Два Облака</a>)</td>
+<td>МЕКО 2020–2027; «Два Облака» — на странице цен 2019–2025</td>
+<td>Воздухообмена по нормам нет ни у кого. Теплопотери у МЕКО «в разработке». СП 131.13330.2025 не подтверждён ни у кого. Независимых сравнений точности нет</td>
+</tr>
+<tr>
+<td>10. Чертежи и спецификации</td>
+<td>Оформленные спецификации «О_ОВ_…» по форме 1. Листы общих данных — из спецификаций шаблона. Аксонометрия — прямоугольная изометрия из 3D-вида. Принципиальные схемы — шаблон схем МЕКО (<a href="https://www.mekopro.com/shemy-revit-shablon" target="_blank" rel="noopener">МЕКО</a>) или свои аннотации</td>
+<td>Шаблон схем МЕКО: цена и версия Revit не указаны</td>
+<td>Все</td>
+<td>Косоугольной аксонометрии в Revit нет (<a href="https://3dbim.pro/news/35/" target="_blank" rel="noopener">3dbim.pro</a>). Готового инструмента схем по ГОСТ нет</td>
+</tr>
+<tr>
+<td>11. Листы и основная надпись</td>
+<td>Семейство «ADSK_ОсновнаяНадпись» (формы 3–6) и листы регистрации изменений форм 9 и 9а (<a href="https://manual2021.bim2b.ru/ov/" target="_blank" rel="noopener">BIM2B</a>) сверить с ГОСТ Р 21.101-2026</td>
+<td>—</td>
+<td>Все</td>
+<td>Как изменились графы основной надписи, в найденных обзорах не описано</td>
+</tr>
+<tr>
+<td>12. Выгрузка в экспертизу</td>
+<td>Узнать требования своей экспертизы. Поставить свежий IFC-экспортёр с GitHub (<a href="https://github.com/Autodesk/revit-ifc/releases" target="_blank" rel="noopener">Autodesk/revit-ifc</a>). Задать классы IFC и таблицу соответствия параметров. Выгружать из 3D-вида. Проверить заполнение плагином BimStep «Проверка мэппинга IFC» (<a href="https://infars.ru/news/novinka-plagin-proverka-meppinga-ifc-ot-bimstep-dlya-autodesk-revit/" target="_blank" rel="noopener">ИНФАРС</a>)</td>
+<td>Экспортёр бесплатный; BimStep — пробный период 14 дней</td>
+<td>Экспортёр 26.4.1 — для Revit 2026 (<a href="https://up1.autodesk.com/2026/RVT/ADSKIFCExporterHelp_26_4_1.htm" target="_blank" rel="noopener">Autodesk</a>)</td>
+<td>Для инженерных систем экспорт в IFC4 Reference View у Autodesk «в разработке». Коды классификатора КСИ для ОВ никто автоматически не ставит</td>
+</tr>
+</tbody>
+</table></div>
+<h3>Язык и контент включаются за минуту</h3>
+<p>Отдельных «языковых пакетов» у Revit нет: переводы всех языков зашиты в программу. Поэтому ключ <code>/language RUS</code> работает на уже установленном Revit (<a href="https://resources.imaginit.com/support-blog/how-does-revit-choose-the-default-language-during-installation" target="_blank" rel="noopener">IMAGINiT</a>). Русский есть в переключателе языков справки Revit 2025, 2026 и 2027 (<a href="https://help.autodesk.com/view/RVT/2027/ENU/?guid=GUID-A69690A6-62F3-48C6-9F34-043051F815CE" target="_blank" rel="noopener">Autodesk Help 2027</a>). Это справка, а не прямое подтверждение языка интерфейса. Но противоположная фраза «интерфейс 2027 только на пяти языках» встретилась лишь в поисковой выдаче, и её источник найти не удалось. Русский контент Autodesk — шаблоны и библиотека семейств — ставится по желанию. Для работы по ГОСТ он вторичен: вся российская практика стоит на сторонних шаблонах, в первую очередь ADSK.</p>
+<h3>Шаблон ADSK — сердце настройки</h3>
+<p>Шаблоны ADSK делает компания BIM2B с 2016 года: восемь шаблонов по разделам, в том числе ОВ. По оценке самого вендора, их или их параметры используют <strong>60–80 % проектировщиков в Revit</strong>; это цифра вендора, а не измерение (<a href="https://bim2b.ru/adsk" target="_blank" rel="noopener">BIM2B</a>). В шаблоне ОВ есть:</p>
+<ul>
+<li>оформленные спецификации воздуховодов и трубопроводов по форме 1 ГОСТ 21.110-2013;</li>
+<li>спецификации для листа общих данных: «Основные показатели по рабочим чертежам марки ОВ», «Характеристика систем», таблица регистрации изменений;</li>
+<li>задания на отверстия и ниши;</li>
+<li>экспликации помещений;</li>
+<li>проверочные спецификации, которые ловят нулевые количества и ошибки формул (<a href="https://manual2021.bim2b.ru/ov/5-3-vkladka-vid/5-3-2-speczifikaczii/" target="_blank" rel="noopener">BIM2B: руководство</a>).</li>
+</ul>
+<p>Системы воздуховодов в шаблоне уже имеют сокращения «П» и «В» и свой цвет. Из «сокращения + номера» плагин строит обозначения систем (<a href="https://manual2021.bim2b.ru/ov/5-1-vkladka-sistemy/5-1-2-sistemnye-semejstva/" target="_blank" rel="noopener">BIM2B</a>). Наименование в спецификации складывается из двух частей: постоянной (<code>ADSK_Наименование</code>) и переменной (<code>ADSK_Техническая характеристика</code>, то есть расход, давление, мощность).</p>
+<p>Макросы, то есть встроенные в шаблон мини-программы, были только в версии для Revit 2019. В шаблонах 2021+ их нет, а обновление наименований делает плагин (<a href="https://forum.bim2b.ru/api/ne-rabotayut-makrosy-shablona-adsk-v-revite-2026/" target="_blank" rel="noopener">форум BIM2B</a>; <a href="https://muratovbim.pro/blog/revit-novye_shablony_adsk_2-0/" target="_blank" rel="noopener">Муратов</a>). Новые параметры в ФОП предлагают через форум. BIM2B выдаёт им постоянный код и следит, чтобы у разных производителей не появились одинаковые по названию, но разные по смыслу поля (<a href="https://forum.bim2b.ru/adsk-faq/gde-skachat-fop-adsk-i-kak-predlozhit-v-nego-novyj-nuzhnyj-parametr/" target="_blank" rel="noopener">форум BIM2B</a>).</p>
+<p>У шаблона три слабых места:</p>
+<ul>
+<li>не указана дата последней редакции;</li>
+<li>обновление под ГОСТ Р 21.101-2026 не найдено;</li>
+<li>ведомости ссылочных и прилагаемых документов в перечне общих данных нет. Её делают ключевой спецификацией — служебной таблицей Revit, которую заполняют вручную и выносят на лист (<a href="https://sapr.ru/article/24699" target="_blank" rel="noopener">sapr.ru</a>).</li>
+</ul>
+<h3>Чертежи по ГОСТ 21.602 упираются в схемы</h3>
+<p>ГОСТ 21.602-2016 требует в общих данных три вещи: план-схему размещения установок, характеристику систем по форме 1 и основные показатели. Ведомость спецификаций в общих данных марки ОВ не выполняется. Системы обозначаются марками П, В, К, ДП, ДВ с порядковыми номерами. Схемы систем выполняют в косоугольной фронтальной изометрии, но прямоугольная изометрия допускается (<a href="https://meganorm.ru/Data2/1/4293749/4293749486.htm" target="_blank" rel="noopener">meganorm</a>); номера пунктов взяты из пересказа, их стоит сверить по тексту. Аксонометрия — объёмная схема системы на плоском листе. В Revit её делают из 3D-вида: вид поворачивают, фиксируют и расставляют марки, то есть подписи-выноски с данными элемента. Но косоугольную фронтальную изометрию, привычную по ГОСТ, Revit не строит, поэтому законный путь — прямоугольная изометрия (<a href="https://3dbim.pro/news/35/" target="_blank" rel="noopener">3dbim.pro</a>).</p>
+<p>Принципиальные схемы делают чертёжными видами с условными графическими обозначениями (УГО). Способов расставить УГО четыре, и у каждого свои ограничения. Например, марки не масштабируются и не меняют цвет по системе (<a href="https://infars.ru/blog/varianty-i-osobennosti-sozdaniya-uslovno_graficheskikh-izobrazheniy-v-revit-mep/" target="_blank" rel="noopener">ИНФАРС</a>). МЕКО продаёт шаблон принципиальных схем на собственных семействах и объясняет это тем, что «штатными средствами схемы строить очень трудно» (<a href="https://www.mekopro.com/shemy-revit-shablon" target="_blank" rel="noopener">МЕКО</a>).</p>
+<h3>Семейства надо проверять до вставки, а не после</h3>
+<p>По опыту практика Вадима Муратова, <strong>почти любая ошибка в системе — следствие неправильно настроенных коннекторов</strong> (<a href="https://muratovbim.pro/blog/revit-pochemu_semeystvo_lomaet_trubu-vozdukhovod/" target="_blank" rel="noopener">Муратов</a>). Его чек-лист называет пять ловушек:</p>
+<ol>
+<li>Неверное направление потока у оборудования.</li>
+<li>Конкретная классификация системы у «универсальных» элементов вроде шумоглушителя.</li>
+<li>Диффузоры с камерами, которых не видит инспектор систем.</li>
+<li>Коэффициент 0 у наружной решётки, обнуляющий расход.</li>
+<li>Сеть с несколькими открытыми концами, которую Revit не считает (<a href="https://muratovbim.pro/blog/revit-cheklist-oshibki-v-ventilyaczionnyh-sistemah/" target="_blank" rel="noopener">Муратов</a>).</li>
+</ol>
+<p>Поэтому стартовый набор — семейства шаблона плюс семейства производителей на ФОП 2021+. Каждое новое семейство стоит проверить на тестовом проекте, прежде чем пускать в рабочую модель.</p>
+<h3>Расчёты: два зрелых плагина и ни одного подтверждённого на новом климате</h3>
+<p>МЕКО — самый прозрачный вариант по ценам и версиям Revit. Разработчик заявляет ориентацию на СП 60.13330.2020. Аэродинамический плагин МЕКО сам строит магистраль и цепочки, считает линейные и местные потери, определяет коэффициенты местных сопротивлений фасонных частей, позволяет править их вручную и выгружает отчёт в Excel (<a href="https://www.mekopro.com/plugin" target="_blank" rel="noopener">МЕКО</a>).</p>
+<p>«Два Облака» глубже по охвату. Плагин считает теплопотери с учётом грунта и инфильтрации, дымоудаление и подпор по методике ВНИИПО МЧС. Он подбирает оборудование у более чем 20 производителей и записывает расчётные параметры обратно в воздуховоды, клапаны и воздухораспределители (<a href="https://www.c-o-k.ru/articles/plagin-dva-oblaka-dlya-rascheta-sistem-otopleniya-ventilyacii-i-kondicionirovaniya-vozduha" target="_blank" rel="noopener">С.О.К.</a>).</p>
+<p>Anlax Technology описывает методику прямо: участки делятся по расходу с допуском 1 м³/ч. Трение считается по формуле Альтшуля λ = 0,11·(k/Dг + 68/Re)^0,25, где λ — коэффициент трения, k — шероховатость стенки, Dг — гидравлический диаметр, Re — число Рейнольдса. Местные сопротивления берутся по справочнику Идельчика. Плагин находит диктующую ветку — самую нагруженную ветвь, по которой подбирают вентилятор. Размеры он подбирает из ряда проекта, а результат записывает в общие параметры по их GUID (<a href="https://anlax.org/technology/kb/aerodinamicheskij-raschyot-vozduhovodov-instrukcziya-po-ispolzovaniyu/" target="_blank" rel="noopener">Anlax</a>).</p>
+<p>Независимых сравнений этих плагинов с ручным расчётом по СП не найдено. Поэтому любой из них перед сдаточным проектом стоит сверить с ручным расчётом на 3–5 участках.</p>
+<h3>Экспертиза принимает IFC, но у каждой экспертизы своя таблица</h3>
+<p>IFC — открытый формат обмена моделями между программами разных производителей, как PDF для документов. Правила формирования информационной модели задаёт постановление Правительства № 614 от 17.05.2024 (<a href="http://publication.pravo.gov.ru/document/0001202405170050" target="_blank" rel="noopener">pravo.gov.ru</a>). Пока нет XML-схем для ЦИМ (XML — формат структурированных данных), допустим IFC (<a href="https://ancb.ru/publication/read/17270" target="_blank" rel="noopener">АНСБ</a>).</p>
+<p>Практики сводят требования к нескольким пунктам:</p>
+<ul>
+<li>формат IFC 4.0 и выше, IFC 2x3 — только если программа не умеет IFC4;</li>
+<li>каждый элемент отнесён к классу IFC;</li>
+<li>файл одного раздела не больше 500 МБ;</li>
+<li>общие координаты и отсутствие коллизий;</li>
+<li>выгрузка из 3D-вида, потому что скрытые элементы не выгружаются.</li>
+</ul>
+<p>К модели прикладывают паспорт модели, пояснительную записку и отчёт о коллизиях. Требования регионов различаются: в Москве действует версия 4.1, в Санкт-Петербурге — 3.1.0 от декабря 2024 года. Поэтому сначала узнают требования конкретной экспертизы, а уже потом готовят модель (<a href="https://revitserver.ru/gosekspertiza-i-bim/" target="_blank" rel="noopener">revitserver.ru</a>; <a href="https://pro-tim.ru/blog/kak-podgotovit-tsim-k-ekspertize/" target="_blank" rel="noopener">Про-ТИМ</a>).</p>
+<p>Технически в Revit это делается так:</p>
+<ul>
+<li>общий параметр <code>IfcExportAs</code> задаёт класс IFC, например IfcDuctSegment для воздуховода;</li>
+<li>значение -1 исключает элемент из выгрузки;</li>
+<li>свойства сопоставляются текстовым файлом соответствия, где столбцы разделены табуляцией, либо спецификациями со словом «IFC» или «Pset» в названии;</li>
+<li>пустые параметры не выгружаются (<a href="https://infars.ru/blog/kak-prigotovit-sedobnyy-ifc-fayl-iz-informatsionnoy-modeli-autodesk-revit-chast-2/" target="_blank" rel="noopener">ИНФАРС</a>; <a href="https://wiki.bimit.ru/bin/view/6_bim_guides/01_ifc_exp_settings/01_ifc_from_revit/" target="_blank" rel="noopener">wiki.bimit.ru</a>).</li>
+</ul>
+<p>У экспортёра 26.4.1 есть готовая настройка «IFC4 Reference View [BuildingService]». Однако для инженерных систем в этом режиме Autodesk сам пишет «экспорт и импорт всё ещё в разработке» (<a href="https://up1.autodesk.com/2026/RVT/ADSKIFCExporterHelp_26_4_1.htm" target="_blank" rel="noopener">Autodesk</a>), так что классы и наборы свойств ОВ надо проверять на реальном файле.</p>
+<p>КСИ — классификатор строительной информации, который ведёт ФАУ «ФЦС». По его методике коды атрибутов из 8 символов добавляются к наименованию через «#», например «Периметр#XPG_0004». Методика не зависит от программы и формата (<a href="https://meganorm.ru/mega_doc/norm_update_01042026/klassifikaciya/0/metodicheskoe_posobie_klassifikatsiya_i_kodirovanie_18702.html" target="_blank" rel="noopener">meganorm</a>). Готового плагина, который ставит такие коды в элементы ОВ, не найдено. Для проверки файла используют BimStep, BIMvision, Navisworks, Solibri и Tangl Control (<a href="https://pro-tim.ru/blog/kak-podgotovit-tsim-k-ekspertize-chast-2/" target="_blank" rel="noopener">Про-ТИМ</a>; <a href="https://tangl.cloud/products/tangl-control/" target="_blank" rel="noopener">Tangl</a>).</p>
+<h3>Итог по деньгам и дырам</h3>
+<p>Бесплатный минимум закрывает почти всё оформление. В него входят:</p>
+<ul>
+<li>ключ языка;</li>
+<li>шаблон ADSK и ФОП;</li>
+<li>Dynamo-скрипты BIM2B;</li>
+<li>«Нумерация» ModPlus;</li>
+<li>ручной ряд размеров;</li>
+<li>IFC-экспортёр.</li>
+</ul>
+<p>Сюда не входят схемы и ведомость ссылочных документов. Платить придётся за три вещи:</p>
+<ul>
+<li>за расчёты по СП (МЕКО от 750 ₽ за плагин или «Два Облака» от 15 000 ₽ в месяц);</li>
+<li>за автонаименования, если скриптов мало (BIM2B Template Tools, цена не опубликована, или плагин МЕКО);</li>
+<li>за пакет рутинных инструментов (BimStep 1 000–3 000 ₽).</li>
+</ul>
+<p>Даже после всех покупок остаются пять пробелов, названных в начале: воздухообмен по нормам, схемы по ГОСТ, автозаполнение общих данных, автопроверка по замечаниям экспертизы и задания смежникам. Добавим к ним два пробела данных: новый климат СП 131 и основную надпись по ГОСТ Р 21.101-2026. Именно из этих пробелов складывается вторая часть отчёта.</p>
+<h2>Revit разрешает подменить формулу только для потерь давления</h2>
+<p>Чтобы понять, что можно дописать, нужно знать, куда Revit пускает чужой код. Программный интерфейс (API) — набор команд, через которые внешняя программа читает и меняет модель Revit. Отдельно в нём есть механизм внешних сервисов (External Services). Через него собственная формула встраивается прямо в расчёты Revit и дальше работает везде: в инспекторе систем, в отчёте о потерях давления, при каждом изменении модели.</p>
+<p>Список таких встраиваемых сервисов короткий:</p>
+<ul>
+<li>потери давления в прямых воздуховодах и трубах;</li>
+<li>коэффициенты местных сопротивлений фасонных частей и арматуры;</li>
+<li>расходы по сантехприборам.</li>
+</ul>
+<p>Сервисов для тепловых нагрузок, климата, алгоритма подбора сечений и воздухообмена в нём нет (<a href="https://www.revitapidocs.com/2025/f189eb3f-7a3a-2891-657a-e18cbf014987.htm" target="_blank" rel="noopener">Revit API 2025</a>). Отсюда главный технический вывод отчёта: «внутри Revit по-российски» можно заставить считать только аэродинамику и гидравлику. Остальное пишется как самостоятельный модуль, который читает модель и пишет результат в её параметры.</p>
+<h3>Встроенный расчётный сервер: что это и чем он хорош</h3>
+<p>Сервер — это класс на C#, то есть кусок программы на языке, на котором пишут полноценные надстройки Revit. Его регистрируют при запуске Revit. После этого он появляется в списке методов расчёта рядом со штатными Altshul-Tsal, Colebrook и Haaland (Duct Settings → Calculation) (<a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-MEPEng/files/GUID-42A2BFEA-33A0-4B67-A0D3-5D5F385B6E9A.htm" target="_blank" rel="noopener">Autodesk Help 2027</a>; <a href="https://jeremytammik.github.io/tbc/a/0986_mep_calculation.htm" target="_blank" rel="noopener">The Building Coder</a>). Зарегистрировать сервер можно только до конца запуска Revit, иначе программа выдаёт ошибку (<a href="https://apidocs.co/apps/revit/2025/79a85e01-c0c0-9efa-0a91-271b57cdc557.htm" target="_blank" rel="noopener">Revit API</a>).</p>
+<p>Сервер прямых участков получает всё, что нужно для формулы Альтшуля: форму и размеры сечения, длину, плотность и вязкость воздуха, шероховатость и расход. Возвращает он потерю давления, скорость и число Рейнольдса. Все величины — во внутренних единицах Revit, то есть в футах (<a href="https://rvtdocs.com/2027/Autodesk.Revit.DB.Mechanical.DuctPressureDropData" target="_blank" rel="noopener">rvtdocs</a>).</p>
+<p>Сервер фасонных частей возвращает для каждого пути потока через тройник или отвод безразмерный коэффициент и скоростное давление (<a href="https://rvtdocs.com/2027/Autodesk.Revit.DB.Mechanical.DuctFittingAndAccessoryPressureDropItem" target="_blank" rel="noopener">rvtdocs</a>). Это ровно российская логика ΔP = ζ·ρv²/2, где ζ — коэффициент местного сопротивления (КМС). КМС показывает, во сколько раз потеря давления в отводе или тройнике больше скоростного давления потока. Autodesk прямо пишет, что сторонние методы потерь «появятся в списке» наряду со штатными (<a href="https://help.autodesk.com/cloudhelp/2026/ENU/Revit-MEPEng/files/GUID-6708486B-6D46-49DF-8438-14EAAA6F0818.htm" target="_blank" rel="noopener">Autodesk Help 2026</a>).</p>
+<p>Готовая учебная заготовка есть: открытый пример UserMepCalculation. В нём шесть концепций: трение и КМС для труб и воздуховодов, пересчёт сантехприборов в расход и свой отчёт о потерях (<a href="https://jeremytammik.github.io/tbc/a/0986_mep_calculation.htm" target="_blank" rel="noopener">The Building Coder</a>; <a href="https://github.com/jeremytammik/UserMepCalculation" target="_blank" rel="noopener">GitHub</a>). Инженер из Хорватии на его основе заменил таблицу расходов на немецкую норму DIN 1988 (<a href="https://forums.autodesk.com/t5/revit-api-forum/usermep-calculation-addin/td-p/4968174" target="_blank" rel="noopener">Autodesk Community</a>). Путь проверенный, но открытого сервера с российскими формулами не нашлось ни на GitHub, ни в русскоязычных блогах. МЕКО, «Два Облака» и Anlax, судя по описаниям, считают своим ядром, а не через серверы.</p>
+<p>У этого пути есть непроверенные места. Совпадает ли штатный метод Revit «Altshul-Tsal» с российской формулой Альтшуля, неизвестно: формула Revit в документации не приведена. Есть пересказ форумного ответа, будто при переходном режиме течения он даёт ноль (<a href="https://forums.autodesk.com/t5/revit-mep-forum/no-pressure-drop-and-friction-for-duct/td-p/9040860" target="_blank" rel="noopener">Autodesk Community</a>); первоисточник не проверен. Не проверено и то, что станет с моделью на компьютере без нашей надстройки. Это важно, когда модель передают смежникам. Для арматуры, решёток и оборудования сервер вообще не нужен: на коннекторе семейства можно задать «Коэффициент K» или «Удельные потери» с формулой (<a href="https://muratovbim.pro/blog/revit-svoystva_soediniteley_truboprovodov/" target="_blank" rel="noopener">Муратов</a>).</p>
+<h3>Что Revit не пускает внутрь и что тогда делать</h3>
+<p>Таблицу размеров воздуховодов можно менять и программно, командой <code>DuctSizeSettings.AddSize</code> (<a href="https://rvtdocs.com/2027/Autodesk.Revit.DB.Mechanical.DuctSizeSettings" target="_blank" rel="noopener">rvtdocs</a>). А вот сам алгоритм подбора сечений не подменяется. В Revit 2027 появились классы SizingOptions и SizingCalculator, но это готовый калькулятор с настройками по умолчанию в футах и дюймах, а не точка встраивания своей методики (<a href="https://rvtdocs.com/2027/whats-new/" target="_blank" rel="noopener">What's New in Revit API 2027</a>). Российский подбор «по допустимой скорости и удельным потерям» пишется своим кодом, который потом записывает размеры в воздуховоды.</p>
+<p>Расчёт нагрузок подменить нельзя, но модель для него читается целиком. Аналитическая тепловая модель — пространства, поверхности ограждений, проёмы, теплотехника конструкций — доступна через <code>EnergyAnalysisDetailModel</code> (<a href="https://rvtdocs.com/2027/Autodesk.Revit.DB.Analysis.EnergyAnalysisDetailModel" target="_blank" rel="noopener">rvtdocs</a>). Свой результат можно записать в пространство. Пространство (Space) — объём помещения в инженерной модели, где хранятся нагрузки и расходы. У него записываемые поля: расчётные теплопотери <code>DesignHeatingLoad</code>, приток <code>DesignSupplyAirflow</code>, вытяжка <code>DesignExhaustAirflow</code> и другие. Штатные «расчётные» поля (<code>CalculatedHeatingLoad</code> и подобные) только читаются и остаются по ASHRAE (<a href="https://rvtdocs.com/2027/Autodesk.Revit.DB.Mechanical.Space" target="_blank" rel="noopener">rvtdocs</a>).</p>
+<p>В Revit 2027 Autodesk многое переделал:</p>
+<ul>
+<li>коэффициент теплопередачи переименован в <code>ThermalTransmittance</code>;</li>
+<li>зоны HVAC заменены на System-Zones;</li>
+<li>часть членов классов удалена, многие настройки энергомодели объявлены устаревшими без замены (<a href="https://rvtdocs.com/2027/whats-new/" target="_blank" rel="noopener">What's New in Revit API 2027</a>).</li>
+</ul>
+<p>Поэтому код для нагрузок придётся вести отдельно для версий «до 2026» и «2027».</p>
+<p>Климат СП 131 в Revit хранить негде. Расчётные температуры на вкладке Weather вводятся вручную и влияют только на старый расчёт нагрузок (<a href="https://help.autodesk.com/cloudhelp/2021/ENU/Revit-Model/files/GUID-84AA7ED1-5602-4384-8870-DEC93DF1D9F2.htm" target="_blank" rel="noopener">Autodesk Help 2021</a>). Программного доступа к ним не найдено. Для динамического анализа Systems Analysis через API можно подставить файл погоды EPW (<code>WeatherFile</code>) (<a href="https://www.revitapidocs.com/2027/f5fae390-1c11-466e-766f-480c5e6d8c68.htm" target="_blank" rel="noopener">Revit API 2027</a>). По России такие файлы есть для 1 825 пунктов (<a href="https://climate.onebuilding.org/sources/" target="_blank" rel="noopener">climate.onebuilding.org</a>). Но в них расчётные условия ASHRAE, а не таблицы СП 131. Значит, климатические таблицы СП 131.13330.2025 наш модуль должен держать у себя. По сути это работа с данными, а не программирование.</p>
+<p>Воздухообмен Revit тоже не считает и расход помещения на решётки не раздаёт. Autodesk ещё в 2014 году ответил, что для этого надо написать свою команду (<a href="https://forums.autodesk.com/t5/revit-api-forum/air-terminal-flow-rates/td-p/4843673" target="_blank" rel="noopener">Autodesk Community</a>). Внутренняя единица расхода — кубические футы в секунду: <strong>1 фут³/с ≈ 102 м³/ч</strong> (<a href="https://forum.dynamobim.com/t/space-imported-specified-return-supply-airflow-from-excel-conversion/8952" target="_blank" rel="noopener">форум Dynamo</a>). Ошибка в пересчёте единиц — первое, что должны ловить тесты.</p>
+<div class="tw" tabindex="0" role="region" aria-label="Таблица (прокручивается по горизонтали)"><table role="table">
+<thead>
+<tr>
+<th>Что хотим по-российски</th>
+<th>Можно ли внутри Revit</th>
+<th>Как</th>
+<th>Что пишем сами</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Трение в воздуховодах и трубах по Альтшулю</td>
+<td>Да</td>
+<td>Встроенный расчётный сервер на C#</td>
+<td>Сервер и перевод единиц</td>
+</tr>
+<tr>
+<td>КМС фасонных частей по Идельчику</td>
+<td>Да</td>
+<td>Сервер фасонных частей и окно его настроек, C#</td>
+<td>Сервер; для сложных тройников — чтение параметров экземпляра (не проверено)</td>
+</tr>
+<tr>
+<td>КМС арматуры, решёток, оборудования</td>
+<td>Да, без кода</td>
+<td>«Коэффициент K» или «Удельные потери» на коннекторе семейства</td>
+<td>Ничего</td>
+</tr>
+<tr>
+<td>Российский ряд размеров</td>
+<td>Да</td>
+<td><code>DuctSizeSettings.AddSize</code> или вручную</td>
+<td>Маленький скрипт</td>
+</tr>
+<tr>
+<td>Алгоритм подбора сечений</td>
+<td>Нет</td>
+<td>Штатный подбор ASHRAE; в 2027 есть калькулятор</td>
+<td>Свой подбор, запись размеров</td>
+</tr>
+<tr>
+<td>Климат СП 131</td>
+<td>Нет</td>
+<td>Ручной ввод только для старого расчёта нагрузок</td>
+<td>Таблица климата в своём модуле</td>
+</tr>
+<tr>
+<td>Теплопотери по СП 50 и СП 131</td>
+<td>Нет</td>
+<td>Чтение аналитической модели, запись в пространство</td>
+<td>Свой расчётный модуль</td>
+</tr>
+<tr>
+<td>Воздухообмен по СП 60</td>
+<td>Нет</td>
+<td>Запись в пространство, раздача на решётки</td>
+<td>Свой модуль (простой)</td>
+</tr>
+<tr>
+<td>Диктующая ветка, отчёт по-российски</td>
+<td>Через чтение</td>
+<td>Участки <code>MEPSection</code>, <code>PressureLossOfCriticalPath</code> (<a href="https://help.autodesk.com/cloudhelp/2025/ENU/Revit-API/files/Revit_API_Developers_Guide/Discipline_Specific_Functionality/MEP_Engineering/Revit_API_Revit_API_Developers_Guide_Discipline_Specific_Functionality_MEP_Engineering_MEP_Systems_html.html" target="_blank" rel="noopener">Revit API Guide</a>)</td>
+<td>Свой отчёт</td>
+</tr>
+</tbody>
+</table></div>
+<h3>На чём писать: pyRevit, C# или сервер</h3>
+<p>Инструменты можно писать в трёх формах.</p>
+<p><strong>Скрипт pyRevit.</strong> pyRevit — бесплатная надстройка с открытым кодом. Она добавляет в Revit свою вкладку и запускает там небольшие программы на языке Python. Последняя версия — 6.5.5 от 25.08.2026 (<a href="https://github.com/pyrevitlabs/pyRevit" target="_blank" rel="noopener">GitHub pyRevit</a>). Скрипт pyRevit не надо компилировать, то есть собирать в готовую программу, и его легко править. Для всего, что сводится к «прочитать модель — посчитать — записать параметры», его хватает.</p>
+<p><strong>Плагин на C#.</strong> Это собранная программа. Она быстрее и надёжнее на больших моделях, но её надо пересобирать под каждое поколение Revit:</p>
+<ul>
+<li>Revit 2024 — .NET Framework 4.8, причём в нём идентификаторы элементов стали 64-разрядными (<a href="https://rvtdocs.com/2024/whats-new/" target="_blank" rel="noopener">What's New 2024</a>);</li>
+<li>Revit 2025–2026 — .NET 8 (<a href="https://rvtdocs.com/2025/whats-new/" target="_blank" rel="noopener">What's New 2025</a>);</li>
+<li>Revit 2027 — .NET 10.</li>
+</ul>
+<p><strong>Встроенный расчётный сервер.</strong> Это тот же плагин на C#, который регистрирует свою формулу при запуске. Примеров таких серверов на Python не найдено, поэтому считаем, что нужен только C#.</p>
+<p>Разумная схема для заказчика такая: формулы (Альтшуль, Идельчик, воздухообмен, теплопотери) живут в одной отдельной библиотеке без привязки к Revit. Её вызывают и кнопка pyRevit или плагин, и сервер, и команда для ИИ. Тогда одна и та же проверенная формула работает везде.</p>
+<p>Второе правило для всех наших инструментов: обращаться к ADSK-параметрам по их GUID, а не по названию, как это делает Anlax (<a href="https://anlax.org/technology/kb/aerodinamicheskij-raschyot-vozduhovodov-instrukcziya-po-ispolzovaniyu/" target="_blank" rel="noopener">Anlax</a>). Тогда инструмент не сломается от русского или английского интерфейса и от переименования поля.</p>
+<h2>ИИ подключают как пульт к проверенным командам, а не как расчётчика</h2>
+<p>MCP (Model Context Protocol) — открытый стандарт-«розетка». Через него ИИ-программа, например Claude Desktop или Cursor, вызывает готовые команды другой программы: читает элементы Revit, меняет параметры, выгружает таблицы.</p>
+<p>У Autodesk для Revit 2027 есть официальный Revit Public MCP Server. Это техническая предварительная версия от 17.06.2026, которая <strong>только читает модель</strong>. Инструментов в ней семь: найти запущенный Revit, найти элементы, показать параметры, выделить, приблизить, открыть вид, выгрузить вид или спецификацию (<a href="https://www.autodesk.com/blogs/aec/2026/06/17/revit-public-mcp-server/" target="_blank" rel="noopener">Autodesk</a>). Как добавить в него свои команды, в документации не описано. Встроенный ИИ-помощник Autodesk Assistant намеренно поддерживает узкий набор задач. Функций для инженерных систем Autodesk не заявляет (<a href="https://www.autodesk.com/blogs/aec/2026/04/22/autodesk-assistant-in-revit-tech-preview/" target="_blank" rel="noopener">Autodesk</a>).</p>
+<p>Для своих команд подходят открытые серверы сообщества. Самый известный, mcp-servers-for-revit, устроен из трёх частей: сервер на TypeScript общается с надстройкой на C#, а та загружает «набор команд». Своя команда — это обработчик на C# плюс короткое описание инструмента для ИИ. Готовые сборки есть для Revit 2020–2026 (<a href="https://github.com/mcp-servers-for-revit/mcp-servers-for-revit" target="_blank" rel="noopener">GitHub</a>). Его ответвление от LuDattilo заявляет 138 инструментов, версии 2023–2027 и добавление команд «без изменения ядра плагина» (<a href="https://github.com/LuDattilo/revit-mcp-server" target="_blank" rel="noopener">GitHub</a>). Осторожнее устроен KenLP/RevitMCPServer для 2025–2027:</p>
+<ul>
+<li>в нём нет команды «выполнить любой код»;</li>
+<li>каждая запись — именованная транзакция (пакет изменений Revit), которая отменяется одной командой;</li>
+<li>есть пробный прогон, когда программа сначала показывает, что изменит, и ничего не трогает (<a href="https://github.com/KenLP/RevitMCPServer" target="_blank" rel="noopener">GitHub</a>).</li>
+</ul>
+<p>Живой тест российского практика показал обе стороны MCP. Сетка осей создалась одним запросом, но окна получились не того размера. Элементы удалялись, хотя команды удаления были отключены в настройках сервера. Вывод автора: MCP хорош для разовых задач, а для повторяемых процессов надёжнее плагин (<a href="https://dzen.ru/a/agYtY7mRBFQSC848" target="_blank" rel="noopener">Дзен</a>).</p>
+<p>Отсюда принцип для нашей разработки: <strong>ИИ не считает, ИИ вызывает</strong>. Инженер пишет: «посчитай воздухообмен для выбранных помещений». ИИ вызывает нашу команду — тот же проверенный код, что стоит за кнопкой pyRevit. Команда сначала показывает таблицу изменений, записывает их только после подтверждения и только в копию модели. Команды «выполнить присланный код» в нашем наборе не будет. Если сервер работает через pyRevit, его надо ограничить адресом 127.0.0.1, то есть только этим компьютером: встроенной защиты паролем у этой части pyRevit нет (<a href="https://www.bimpure.com/blog/pyrevit-mcp-claude-code-tutorial" target="_blank" rel="noopener">BIM Pure</a>). Отдельная угроза — «отравленные» описания инструментов в чужих серверах, поэтому ставить надо только проверенный код (<a href="https://github.com/OWASP/www-community/blob/master/pages/attacks/MCP_Tool_Poisoning.md" target="_blank" rel="noopener">OWASP</a>).</p>
+<p>ИИ полезен и на этапе разработки как «программист на подхвате». Практик с Revit 2027 получил рабочий простой плагин примерно за два часа. ИИ ошибся с версией .NET и использовал устаревшее свойство, но сам заметил противоречие в задании (<a href="https://dzen.ru/a/agC4L5w_ckqc11pW" target="_blank" rel="noopener">Дзен</a>). Типовые ошибки ИИ в коде для Revit предсказуемы: устаревший идентификатор элемента, правка модели вне транзакции, не та версия .NET (<a href="https://3dshouse.com/how-to-build-revit-addin-with-ai/" target="_blank" rel="noopener">3dshouse</a>).</p>
+<h3>Помощник по нормам: рынок есть, привязки к модели нет</h3>
+<p>Универсальный ИИ без опоры на тексты норм выдумывает пункты. Автор проекта «Цифровой стандарт» спросил ChatGPT о толщине изоляции по СП 50. В ответ он получил «150 мм» и несуществующий пункт «5.2.3». После этого автор построил систему поиска по 5 500+ фрагментам норм, которая цитирует источник и честно отвечает «информации нет» (<a href="https://habr.com/ru/articles/992348/" target="_blank" rel="noopener">Хабр</a>). АВОК тоже предупреждает о выдуманных ссылках на СП и советует RAG с обязательной проверкой человеком (<a href="https://www.abok.ru/for_spec/articles.php?nid=9326" target="_blank" rel="noopener">АВОК</a>). RAG — схема, при которой ИИ перед ответом ищет фрагменты в загруженных текстах и отвечает только по ним.</p>
+<p>Готовые сервисы уже есть:</p>
+<ul>
+<li>КодексНейро от «Техэксперта» работает только с проверенным контентом, даёт ссылки на положения и не строит догадок (<a href="https://cisoclub.ru/razrabotchiki-tehjekspert-predstavili-ii-jekosistemu-kodeksnejro-dlja-raboty-s-normativnoj-dokumentaciej" target="_blank" rel="noopener">CISOCLUB</a>);</li>
+<li>NormaCore AI даёт 2 вопроса в день бесплатно или 10 вопросов в день за 420 ₽ в месяц, но о точности ничего не заявляет (<a href="https://norma-assistant.ru/" target="_blank" rel="noopener">NormaCore AI</a>).</li>
+</ul>
+<p>Ни один сервис не связан с моделью Revit. Ни один не знает, что конкретное пространство — это «кухня-ниша жилого дома» и какую норму к нему применить. Независимых тестов их точности на вопросах ОВиК нет. Нет и данных о том, сколько времени инженер тратит на поиск норм.</p>
+<p>Поэтому наш «помощник по нормам» разумно строить от таблицы, а не от чата. Нужна версионированная таблица «тип помещения → нормативное значение → документ, пункт, редакция»: её же использует пилотный скрипт воздухообмена. RAG добавляется только для вопросов, которые в таблицу не укладываются.</p>
+<h2>Часть 2. Двенадцать инструментов, которые стоит написать самим</h2>
+<p>Инструменты ранжированы по трём признакам:</p>
+<ul>
+<li>сколько у инженера реальной боли и чем она подтверждена;</li>
+<li>насколько участок уже закрыт готовыми продуктами, в том числе дорожной картой МЕКО;</li>
+<li>насколько сложно сделать и проверить.</li>
+</ul>
+<p>Сложность и польза — экспертная оценка, а не измерение. Ни одного независимого замера «до/после» для ОВиК в Revit в открытых источниках нет. Обязательства в вакансиях подтверждают, что это стоящие участки: расчёты, задания смежникам и прохождение экспертизы входят в них стабильно, при зарплатах 170–270 тыс. ₽ в месяц у ведущих специалистов (<a href="https://dvizhenie.ru/job/vacancy/1748" target="_blank" rel="noopener">Sminex</a>; <a href="https://hh.ru/vacancy/129753662" target="_blank" rel="noopener">hh.ru</a>).</p>
+<p>Дорожная карта МЕКО на 29.09.2026 держит «в разработке» семь модулей: «Теплопотери», «Клапаны ПДВ», «Умные выноски», «Схемы», «Воздухообмен», «Уклон» и «Коллизии» (<a href="https://www.mekopro.com/plugin" target="_blank" rel="noopener">МЕКО</a>). Это одновременно подтверждение спроса и риск, что конкурент успеет раньше.</p>
+<div class="tw" tabindex="0" role="region" aria-label="Таблица (прокручивается по горизонтали)"><table role="table">
+<thead>
+<tr>
+<th>№</th>
+<th>Инструмент и что он делает</th>
+<th>Какую боль закрывает, чем подтверждено</th>
+<th>Что уже есть (в том числе в планах МЕКО)</th>
+<th>На чём делать</th>
+<th>Сложность и польза (оценка)</th>
+<th>Как проверять правильность</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><strong>Воздухообмен по нормам.</strong> По типу помещения, объёму, числу людей и оборудованию считает приток и вытяжку по наибольшему из требований (кратность × объём, норма на человека, компенсация отсосов). Сводит баланс, пишет результат в пространство со ссылкой на пункт нормы, затем делит расход между решётками помещения</td>
+<td>Это исходные данные для всех дальнейших расчётов. «Воздухообмен ниже нормы» стоит в списках типовых замечаний экспертизы (<a href="https://vc.ru/tech/2883186-ekspertiza-proekta-ventilyatsii" target="_blank" rel="noopener">vc.ru</a>; <a href="https://www.energoauditmsk.ru/yekspertiza_proektnoj_dokumentacii_po_razdelu_otoplenie_i_ventilyaciya.php" target="_blank" rel="noopener">Энергоаудит-МСК</a>). Revit сам расход на решётки не раздаёт (<a href="https://forums.autodesk.com/t5/revit-api-forum/air-terminal-flow-rates/td-p/4843673" target="_blank" rel="noopener">Autodesk Community</a>)</td>
+<td>Скрипт BIM2B только заполняет таблицу балансов (<a href="https://manual2021.bim2b.ru/ov/5-3-vkladka-vid/5-3-2-speczifikaczii/" target="_blank" rel="noopener">BIM2B</a>). Аэропро.Эксперт считает пятью способами, но связан с Renga, не с Revit (<a href="https://docs.aeropro.expert/engineering/air-exchange/air-exchange-table/" target="_blank" rel="noopener">Аэропро</a>). У МЕКО «Воздухообмен» (перенос из пространств в решётки) в разработке</td>
+<td>pyRevit; позже — общая библиотека и команда MCP</td>
+<td>Низкая–средняя; польза высокая</td>
+<td>Ручной расчёт на 5 помещениях разных типов; сумма по решёткам равна расходу помещения; в каждой записи есть документ, пункт и редакция</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>Автопроверка модели.</strong> Отчёт с переходом к элементу. Ловит открытые концы, неверную классификацию и направление потока, нулевые расходы, скорости выше порога, пустые ADSK-параметры, несовпадение расхода пространства и решёток, обратные и слишком малые уклоны, отсутствие гибких вставок у вентилятора, транзитные воздуховоды без огнезащиты</td>
+<td>Чек-лист из пяти ловушек (<a href="https://muratovbim.pro/blog/revit-cheklist-oshibki-v-ventilyaczionnyh-sistemah/" target="_blank" rel="noopener">Муратов</a>). Типовые замечания: скорости, гибкие вставки, огнезащита, расхождения количеств (<a href="https://vc.ru/tech/2883186-ekspertiza-proekta-ventilyatsii" target="_blank" rel="noopener">vc.ru</a>; <a href="https://energomir.su/blog/tipichnye-oshibki-pri-proektirovanii-sistem-ventilyacii-i-otopleniya" target="_blank" rel="noopener">energomir</a>). Переходы при малой разнице уклонов Revit не строит (<a href="https://forum.bim2b.ru/revit/soedineniya-trub-raznyh-uklonov/" target="_blank" rel="noopener">форум BIM2B</a>)</td>
+<td>«Показать отсоединения» (<a href="https://help.autodesk.com/cloudhelp/2024/RUS/Revit-GetStarted/files/GUID-5A8746C7-0AC9-41EE-BA21-37A386F2EEA2.htm" target="_blank" rel="noopener">Autodesk</a>); Model Checker без российских правил (<a href="https://cad.kz/articles/kak_vypolnit_proverku_modeli_s_pomoshchyu_autodesk_model_checker_for_revit/" target="_blank" rel="noopener">cad.kz</a>); МЕКО «Скорость воздуха»; BimStep — открытые коннекторы. У МЕКО «Уклон» в разработке</td>
+<td>pyRevit; при росте — C#</td>
+<td>Средняя; польза высокая</td>
+<td>Эталонная модель с заранее посаженными ошибками: каждое правило находит свою ошибку и не даёт ложных срабатываний на чистой модели</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>Таблицы общих данных.</strong> Собирает по каждой системе расход, давление, марку и мощность установки, данные воздухонагревателя и заполняет «Характеристику систем» и «Основные показатели» шаблона</td>
+<td>Обязательны по ГОСТ 21.602-2016 (<a href="https://meganorm.ru/Data2/1/4293749/4293749486.htm" target="_blank" rel="noopener">meganorm</a>). Специализированного инструмента поиск не нашёл. Расхождения спецификации и чертежей — типовое замечание (<a href="https://vc.ru/tech/2883186-ekspertiza-proekta-ventilyatsii" target="_blank" rel="noopener">vc.ru</a>)</td>
+<td>В шаблоне ADSK есть бланки таблиц, заполняют их вручную или Dynamo</td>
+<td>pyRevit</td>
+<td>Низкая–средняя; польза средняя</td>
+<td>Сверка с паспортами оборудования и суммой расходов решёток; повторный прогон после правки модели даёт согласованный результат</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>Задания смежникам и изменения между выдачами.</strong> Из параметров оборудования делает таблицы: электрикам (мощность, напряжение, категория), разделу ВК (дренаж, подпитка), автоматике (перечень точек), конструкторам (нагрузки). Отдельно показывает, что изменилось с прошлой выдачи</td>
+<td>Обязанность «формировать задания смежным подразделениям» есть в вакансиях (<a href="https://dvizhenie.ru/job/vacancy/1748" target="_blank" rel="noopener">Sminex</a>); замечания на плохую увязку разделов (<a href="https://vc.ru/tech/2883186-ekspertiza-proekta-ventilyatsii" target="_blank" rel="noopener">vc.ru</a>)</td>
+<td>Автоматизированы только отверстия: ПИК (<a href="https://habr.com/ru/companies/pik_digital/articles/934112/" target="_blank" rel="noopener">Хабр</a>), BimStep (<a href="https://bim-support.ru/article/prosvet/openings/bimstep" target="_blank" rel="noopener">BIM Просвет</a>), FutureBIM. Сравнение версий — только общее, без ОВ-специфики (<a href="https://buildsoft.ru/articles/Autodesk/sravnenie-versiy-faylov-revit/" target="_blank" rel="noopener">БилдСофт</a>)</td>
+<td>pyRevit, затем C# для хранения снимков</td>
+<td>Средняя; польза средняя–высокая</td>
+<td>Итоговая мощность совпадает со спецификацией; форму задания заранее согласовать с электриками (стандартной формы в источниках нет)</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>Аудит семейств перед вставкой.</strong> Проверяет коннекторы (классификацию, направление, связь с ADSK-параметрами), версию ФОП по GUID и вес файла, выдаёт отчёт</td>
+<td>«Почти любая ошибка — коннекторы» (<a href="https://muratovbim.pro/blog/revit-pochemu_semeystvo_lomaet_trubu-vozdukhovod/" target="_blank" rel="noopener">Муратов</a>); семейства на ФОП 2017 (<a href="https://bimlib.pro/articles/obzor-bim-modeley-ventilyatsionnykh-sistem-kompanii-shuft" target="_blank" rel="noopener">BIMLIB</a>)</td>
+<td>BimStep «Анализ открытых коннекторов» (<a href="https://www.bimstep.com/ru-mep" target="_blank" rel="noopener">BimStep</a>); облачная библиотека Family Manager (<a href="https://www.bimteam.ru/fm" target="_blank" rel="noopener">BIMTeam</a>); BFSP Replacer для замены параметров</td>
+<td>pyRevit</td>
+<td>Низкая–средняя; польза средняя–высокая</td>
+<td>Прогон по 20–30 семействам, заранее проверенным вручную; совпадение вердиктов</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>Российский ряд сечений и проверка размеров.</strong> Одинаково ставит ряд ГОСТ Р 70349-2022 во все проекты, отключает лишние размеры, помечает воздуховоды вне ряда и с недопустимым соотношением сторон</td>
+<td>Штатный подбор даёт нереалистичные сечения при соотношении сторон больше 6:1 (<a href="https://muratovbim.pro/blog/revit-avtomaticheskiy_podbor_secheniy_trub_i_vozdukhovodov/" target="_blank" rel="noopener">Муратов</a>). ГОСТ 24751-81 ограничивает соотношение значением 6,3 (<a href="https://allgosts.ru/23/120/gost_24751-81" target="_blank" rel="noopener">allgosts</a>)</td>
+<td>Можно вручную в настройках; Anlax подбирает из ряда проекта</td>
+<td>pyRevit (<code>DuctSizeSettings.AddSize</code>)</td>
+<td>Очень низкая; польза средняя</td>
+<td>Число размеров в настройках равно ряду; выборочная проверка воздуховодов</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>Расчётные серверы потерь давления.</strong> Встраивают в Revit формулу Альтшуля и КМС по Идельчику, после чего штатный отчёт о потерях и инспектор систем считают по российским методикам</td>
+<td>База КМС Revit — американская (<a href="https://help.autodesk.com/cloudhelp/2026/ENU/Revit-MEPEng/files/GUID-3D31AB56-ADDD-48F7-AA6F-C63A8BA821BD.htm" target="_blank" rel="noopener">Autodesk Help 2026</a>)</td>
+<td>Открытых российских серверов нет. МЕКО, «Два Облака» и Anlax считают своим ядром. Заготовка — UserMepCalculation (<a href="https://github.com/jeremytammik/UserMepCalculation" target="_blank" rel="noopener">GitHub</a>); чешский плагин Arkance считает потери с пользовательскими коэффициентами (<a href="https://budweiser.cadstudio.cz/2023/11/pressure-drops-new-revit-plugin-for.html" target="_blank" rel="noopener">Arkance</a>)</td>
+<td>C#, встроенный сервер</td>
+<td>Средняя–высокая; польза высокая</td>
+<td>10–20 эталонных участков с ручным расчётом; сравнение с МЕКО или Anlax; проверка модели, открытой на компьютере без надстройки</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>Команды ОВиК для ИИ и помощник по нормам.</strong> Инструменты 1–6 становятся командами, которые ИИ вызывает по просьбе инженера с пробным прогоном. Помощник по нормам отвечает только по таблице норм и загруженным текстам, всегда с пунктом и редакцией</td>
+<td>ИИ выдумывает пункты СП (<a href="https://habr.com/ru/articles/992348/" target="_blank" rel="noopener">Хабр</a>; <a href="https://www.abok.ru/for_spec/articles.php?nid=9326" target="_blank" rel="noopener">АВОК</a>); ни один сервис по нормам не привязан к модели</td>
+<td>КодексНейро, NormaCore AI и «Цифровой стандарт» работают без Revit. В MCP-серверах нет команд ОВиК</td>
+<td>C#-команды в наборе mcp-servers-for-revit или на .NET-заготовке (<a href="https://github.com/mcp-servers-for-revit/mcp-server-for-revit-dotnet" target="_blank" rel="noopener">GitHub</a>)</td>
+<td>Средняя; польза средняя, спрос не измерен</td>
+<td>Набор из 30–50 вопросов с известными ответами и пунктами; для команд — прогон на копии и сверка «до/после»</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>Подготовка ЦИМ к экспертизе.</strong> По таблице ставит классы IFC по категориям, коды КСИ и наборы свойств под требования конкретной экспертизы, проверяет полноту до выгрузки</td>
+<td>У каждой экспертизы своя таблица соответствия (<a href="https://revitserver.ru/gosekspertiza-i-bim/" target="_blank" rel="noopener">revitserver.ru</a>); плагина КСИ для ОВ не найдено</td>
+<td>BimStep «Выгрузка в IFC» и «Проверка мэппинга IFC» проверяют заполнение (<a href="https://www.bimstep.com/post/exporttoifc" target="_blank" rel="noopener">BimStep</a>)</td>
+<td>pyRevit</td>
+<td>Средняя; польза средняя (раз на выпуск)</td>
+<td>Открыть IFC в просмотрщике; прогнать через проверку экспертизы или Tangl Control</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>Противопожарные клапаны и огнезащита.</strong> По связанной модели архитекторов находит пересечения воздуховодов с противопожарными преградами, проверяет наличие клапана, назначает огнезащиту транзитным участкам, считает м² и толщину</td>
+<td>Клапаны и защита транзитных воздуховодов есть в типовых замечаниях (<a href="https://vc.ru/tech/2883186-ekspertiza-proekta-ventilyatsii" target="_blank" rel="noopener">vc.ru</a>). Скрипт отверстий «ошибается с противопожарными клапанами» (<a href="https://truebim.pro/kak-my-vydaem-zadaniya-na-otverstiya-ovik-v-revit" target="_blank" rel="noopener">TrueBIM</a>)</td>
+<td>Плагин ВЕЗА для Revit 2018–2021 (<a href="https://aqua-therm.ru/news/news_3686.html" target="_blank" rel="noopener">Aqua-Therm</a>); у МЕКО «Клапаны ПДВ» в разработке</td>
+<td>C# (геометрия связанных моделей) плюс проверка в pyRevit</td>
+<td>Средняя–высокая; зависит от параметров огнестойкости в модели архитекторов; польза средняя–высокая</td>
+<td>Тестовая модель с известными преградами; сверка с разделом пожарной безопасности</td>
+</tr>
+<tr>
+<td>11</td>
+<td><strong>Схемы систем по ГОСТ 21.602.</strong> Сам создаёт по каждой системе 3D-вид в прямоугольной изометрии с марками, отметками и расходами; следующий шаг — принципиальные схемы с УГО</td>
+<td>Косоугольная изометрия в Revit не решена (<a href="https://3dbim.pro/news/35/" target="_blank" rel="noopener">3dbim.pro</a>). Нет отметок и марок на аксонометрии — типовое замечание (<a href="https://energomir.su/blog/tipichnye-oshibki-pri-proektirovanii-sistem-ventilyacii-i-otopleniya" target="_blank" rel="noopener">energomir</a>). КРОК делал схемы Dynamo-скриптами (<a href="https://habr.com/ru/companies/croc/articles/967528/" target="_blank" rel="noopener">Хабр</a>)</td>
+<td>Команда BIM2B «Схема трубопроводов» готовит виды; у МЕКО «Схемы» в разработке; Model Studio CS умеет, но вне Revit (<a href="https://csdev.ru/soft/modelstudiocs-heating/modelstudiocs-heating.html" target="_blank" rel="noopener">CSDev</a>)</td>
+<td>C#</td>
+<td>Высокая; польза высокая; риск, что МЕКО выпустит раньше</td>
+<td>Сверка каждой ветки схемы с моделью; нормоконтроль</td>
+</tr>
+<tr>
+<td>12</td>
+<td><strong>Теплопотери по СП 50.13330.2024 и СП 131.13330.2025.</strong> По аналитической модели Revit считает потери с добавками и инфильтрацией и пишет их в пространства</td>
+<td>Встроенный расчёт — ASHRAE (<a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-Analyze/files/GUID-CAEB49E4-364D-49EE-98EA-E14E5FA7C82B.htm" target="_blank" rel="noopener">Autodesk Help 2027</a>); новый климат не подтвердил ни один инструмент</td>
+<td>«Два Облака» (<a href="https://dvaoblaka.ru/revit/heating" target="_blank" rel="noopener">Два Облака</a>); rubim.tech на СП 131 редакции 2020 года; у МЕКО «Теплопотери» в разработке</td>
+<td>Отдельная расчётная библиотека на C# плюс обвязка; две ветки кода — до 2026 и 2027</td>
+<td>Высокая, с высокой ответственностью за результат; польза высокая</td>
+<td>Ручной расчёт или бесплатная программа VALTEC.PRG на 5–10 помещениях (<a href="https://valtec.ru/document/calculate/" target="_blank" rel="noopener">VALTEC</a>); сравнение с «Два Облака»</td>
+</tr>
+</tbody>
+</table></div>
+<p>Первые шесть позиций объединяет одно: они работают с данными, которые в модели уже лежат (пространства, оборудование, ADSK-параметры). Сложной геометрии и тяжёлой расчётной методики им не нужно. Это лучшее соотношение пользы и сложности. Кроме того, их можно делать на pyRevit, где ошибку исправляют за минуты, а не за цикл пересборки. Инструменты 1, 3 и 4 к тому же кормятся из одного источника: расходы по помещениям складываются в расходы по системам, а оттуда — в таблицы общих данных и задания электрикам. Одна правильная цифра, один раз введённая в модель, снимает типовое замечание «разные данные в спецификации и на чертежах».</p>
+<p>Позиции 7–9 — следующий уровень. Им нужен C#, дисциплина версий и договорённости с экспертизой и смежниками. Серверы потерь давления (7) — единственный способ сделать сам Revit российским в аэродинамике, но выигрыш от них заметен, только если компания не покупает МЕКО или Anlax.</p>
+<p>Позиции 10–12 самые болезненные по нормам, но в них либо нужна чужая дисциплина, либо зреет прямой конкурент. Для клапанов нужны параметры огнестойкости в модели архитекторов, и без них никакой код не поможет. Схемы и теплопотери МЕКО уже держит в плане. Для теплопотерь нужен свой расчётный модуль с полной ответственностью за цифру. Входить туда стоит после того, как первые инструменты заработали и выяснилось, что выпустили конкуренты.</p>
+<p>Проверка правильности во всех двенадцати случаях строится на пяти приёмах:</p>
+<ol>
+<li><strong>Эталонная модель</strong> — маленький тестовый проект с заранее известными ответами и специально посаженными ошибками.</li>
+<li><strong>Независимый пересчёт</strong> вручную или в Excel на выборке из 3–10 помещений или участков.</li>
+<li><strong>Сверка с другим инструментом</strong>, если он есть: МЕКО, «Два Облака», VALTEC.PRG.</li>
+<li><strong>Ссылка на норму в каждой записанной цифре</strong>: документ, пункт, редакция. Тогда устаревание таблицы видно сразу.</li>
+<li><strong>Замер времени «до/после»</strong> на реальном объекте вместо рекламных процентов.</li>
+</ol>
+<h2>Пилот: «Воздухообмен по нормам» на pyRevit</h2>
+<p>Для первого инструмента лучше всего подходит воздухообмен. Он закрывает подтверждённую боль и нужен на каждом проекте. Из всего списка у него самая короткая дорога к проверке: правильность видна ручным расчётом на пяти помещениях. Его данные — вход для автопроверки (сравнение пространства и решёток), для таблиц общих данных и для заданий смежникам. Главный конкурентный риск ограничен. Модуль МЕКО «Воздухообмен» по описанию только «запишет значения воздухообмена из пространств в воздухораспределители» (<a href="https://www.mekopro.com/plugin" target="_blank" rel="noopener">МЕКО</a>), то есть раздаёт готовые цифры, а не считает их по нормам. Если МЕКО его выпустит, наш скрипт займёт место перед ним: считает и пишет в пространство, а МЕКО раздаёт по решёткам. Автопроверка шла вплотную вторым кандидатом. Но ей нужен набор правил, который пока собран только из косвенных источников. К тому же без правильного воздухообмена одно из её главных правил проверять не с чем.</p>
+<p>Пилот разумно вести в три шага, и каждый можно остановить, не потеряв сделанного.</p>
+<p><strong>Первый шаг — работа инженера, а не программиста.</strong> Составить список типов помещений объекта и таблицу норм. В каждой строке таблицы:</p>
+<ul>
+<li>тип помещения;</li>
+<li>кратность притока и вытяжки;</li>
+<li>норма на человека в м³/ч;</li>
+<li>правило для оборудования;</li>
+<li>документ, пункт и редакция нормы.</li>
+</ul>
+<p>Главный документ — СП 60.13330.2020 с Изменением № 5; по назначению здания к нему добавляются профильные своды правил. Кратностный расход считают по формуле L = n × V, где n — нормируемая кратность, V — объём помещения (<a href="https://inner.su/articles/raskhod-vozdukha-dlya-ventilyatsii-kratnost-vozdukhoobmena-1-10-1-ch/" target="_blank" rel="noopener">inner.su</a>). Эта таблица и есть главный актив пилота. Её же потом использует помощник по нормам.</p>
+<p><strong>Второй шаг — скрипт, который только читает.</strong> Он выгружает пространства — номер, назначение, площадь, объём, число людей — и считает воздухообмен в Excel, ничего не меняя в модели. На этом шаге ручной расчёт пяти помещений разных типов должен совпасть с результатом полностью.</p>
+<p><strong>Третий шаг — запись.</strong> Скрипт пишет приток и вытяжку в пространства (<code>DesignSupplyAirflow</code>, <code>DesignExhaustAirflow</code>) с пересчётом единиц: 1 фут³/с ≈ 102 м³/ч. Ссылку на норму он пишет в свой параметр. Затем делит расход между решётками пространства (проверка «точка внутри пространства» есть в API: <a href="https://rvtdocs.com/2027/Autodesk.Revit.DB.Mechanical.Space" target="_blank" rel="noopener">rvtdocs</a>). Отчёт о расхождениях показывает, где сумма решёток не равна расходу помещения. Revit не пересчитывает «расчётные» свойства систем на лету (<a href="https://help.autodesk.com/cloudhelp/2025/ENU/Revit-API/files/Revit_API_Developers_Guide/Discipline_Specific_Functionality/MEP_Engineering/Revit_API_Revit_API_Developers_Guide_Discipline_Specific_Functionality_MEP_Engineering_MEP_Systems_html.html" target="_blank" rel="noopener">Revit API Guide</a>). Поэтому после записи надо проверить, что системы пересчитались.</p>
+<p>Запись делается одной именованной транзакцией, которую отменяет Ctrl+Z, и сначала на копии модели. Обращаться к полям надо по GUID ADSK-параметров, а не по русскому названию.</p>
+<p>По объёму это работа на дни, а не на месяцы. КРОК называет около двух рабочих дней на сопоставимый Dynamo-скрипт; это их заявление без независимой проверки (<a href="https://habr.com/ru/companies/croc/articles/967528/" target="_blank" rel="noopener">Хабр</a>). Практик с ИИ-помощником собрал простой плагин примерно за два часа (<a href="https://dzen.ru/a/agC4L5w_ckqc11pW" target="_blank" rel="noopener">Дзен</a>).</p>
+<p>Критерии успеха пилота:</p>
+<ul>
+<li>полное совпадение с ручным расчётом на контрольной выборке;</li>
+<li>ни одной записанной цифры без ссылки на пункт нормы;</li>
+<li>измеренное на реальном объекте время составления таблицы воздухообмена «до» и «после».</li>
+</ul>
+<p>До старта надо решить один вопрос: на какой версии Revit работает инженер. От неё зависит, хватит ли pyRevit, если он нестабилен на 2027 (<a href="https://github.com/pyrevitlabs/pyRevit/issues/3441" target="_blank" rel="noopener">GitHub pyRevit</a>), или сразу понадобится маленький плагин на C#. Когда пилот подтвердит цифры, те же формулы переносятся в общую библиотеку и становятся командой MCP. Инженер сможет сказать ИИ «посчитай воздухообмен для третьего этажа и покажи, что изменится», и ИИ вызовет уже проверенный код.</p>
+<h2>Где источники расходятся и что осталось непроверенным</h2>
+<p>Часть фактов в источниках противоречит друг другу. Ниже расхождения собраны в таблицу, чтобы ни одно не было снято молча.</p>
+<div class="tw" tabindex="0" role="region" aria-label="Таблица (прокручивается по горизонтали)"><table role="table">
+<thead>
+<tr>
+<th>Вопрос</th>
+<th>Версия А</th>
+<th>Версия Б</th>
+<th>Как читать</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Когда вступил ГОСТ Р 21.101-2026</td>
+<td>01.04.2026 (<a href="https://protect.gost.ru/gost/details/17bc12e8-6579-4145-b141-56855e772e7f" target="_blank" rel="noopener">Росстандарт</a>; <a href="https://technollect.cntd.ru/news/read/v-sistemax-texekspert-opublikovan-sravnitelnyi-analiz-gost-r-21101-2020-i-gost-r-21101-2026/novosti-stroitelnoy-otrasli" target="_blank" rel="noopener">Техэксперт</a>)</td>
+<td>01.01.2026 в пересказе страницы Гаранта (<a href="https://base.garant.ru/413848474/" target="_blank" rel="noopener">Гарант</a>)</td>
+<td>Верить 01.04.2026: так пишут три источника, включая Росстандарт</td>
+</tr>
+<tr>
+<td>Русский интерфейс Revit 2027</td>
+<td>Русский есть в переключателе языков справки, русская справка 2027 существует (<a href="https://help.autodesk.com/view/RVT/2027/ENU/?guid=GUID-A69690A6-62F3-48C6-9F34-043051F815CE" target="_blank" rel="noopener">Autodesk Help 2027</a>)</td>
+<td>Фраза «только пять языков интерфейса» из поисковой выдачи; указанная страница о языке ничего не пишет (<a href="https://vc.ru/id5118112/2845641-revit-2027-kak-skachat-i-ustanovit-programmu" target="_blank" rel="noopener">vc.ru</a>)</td>
+<td>Считать русский доступным, проверить на установке ключом <code>/language RUS</code></td>
+</tr>
+<tr>
+<td>Для каких Revit шаблон ADSK</td>
+<td>Руководство: «работают с Revit 2021, 2022, 2023» (<a href="https://manual2021.bim2b.ru/" target="_blank" rel="noopener">BIM2B</a>)</td>
+<td>Каталог: версии до 2027; модератор — «для любого Revit 2021+» (<a href="https://bim2b.ru/product-category/adsk/" target="_blank" rel="noopener">BIM2B</a>; <a href="https://forum.bim2b.ru/adsk-faq/gde-skachat-adsk-shablony-revit/" target="_blank" rel="noopener">форум</a>)</td>
+<td>Руководство, вероятно, не обновлялось; шаблон открывали в 2026</td>
+</tr>
+<tr>
+<td>Версии BIM2B Template Tools</td>
+<td>В каталоге — «Revit 2021» (<a href="https://bim2b.ru/product-category/po/" target="_blank" rel="noopener">BIM2B</a>)</td>
+<td>На странице продукта — 2021–2027 (<a href="https://bim2b.ru/product/bim2b-template-tools/" target="_blank" rel="noopener">BIM2B</a>)</td>
+<td>Опираться на страницу продукта</td>
+</tr>
+<tr>
+<td>Единица воздуховодов в спецификации шаблона</td>
+<td>Погонные метры: жалобы пользователей и руководство 2019 года (<a href="https://forum.bim2b.ru/adsk/plagin-bim2b-idei-i-zamechaniya/" target="_blank" rel="noopener">форум BIM2B</a>)</td>
+<td>м² для воздуховодов и изоляции в пересказе руководства 2021+ (<a href="https://manual2021.bim2b.ru/ov/5-3-vkladka-vid/5-3-2-speczifikaczii/" target="_blank" rel="noopener">BIM2B</a>)</td>
+<td>Зависит от версии шаблона; проверить на живом файле</td>
+</tr>
+<tr>
+<td>XML-схема атрибутов ЦИМ</td>
+<td>В 2022 году опубликовано «описание атрибутивного состава ЦИМ» в виде XML-схем как проект приказа (<a href="https://smi.cntd.ru/build/news/26-5-2022" target="_blank" rel="noopener">Построй</a>)</td>
+<td>«В стадии разработки», схем по ОВиК нет (<a href="https://ancb.ru/publication/read/14088" target="_blank" rel="noopener">АНСБ</a>)</td>
+<td>Страница Минстроя не открылась; на практике сдают IFC с региональной таблицей</td>
+</tr>
+<tr>
+<td>Обязателен ли национальный стандарт ТИМ с 01.06.2026</td>
+<td>Так сказано в пересказе страницы Tangl (<a href="https://tangl.cloud/products/tangl-control/" target="_blank" rel="noopener">Tangl</a>)</td>
+<td>В описаниях самих ГОСТ Р 10.00.00 обязательность для всех проектов не заявлена (<a href="https://www.nep.expert/info/normativnaya-dokumentaciya-po-tim/" target="_blank" rel="noopener">nep.expert</a>)</td>
+<td>Не подтверждено; уточнять по регламенту своей экспертизы</td>
+</tr>
+<tr>
+<td>Умеет ли официальный MCP Autodesk менять модель</td>
+<td>Только чтение, 7 инструментов (<a href="https://www.autodesk.com/blogs/aec/2026/06/17/revit-public-mcp-server/" target="_blank" rel="noopener">Autodesk</a>)</td>
+<td>Через Assistant — массовые правки параметров (<a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-WhatsNew/files/GUID-97697CBF-0E11-484E-96E5-4277E3E8D61F.htm" target="_blank" rel="noopener">Autodesk Help</a>; <a href="https://dynamobim.org/dynamo-4-2-in-revit-2027-3-autodesk-assistant-dynamo-mcp/" target="_blank" rel="noopener">блог Dynamo</a>)</td>
+<td>Похоже, у Assistant набор шире, чем у публичного сервера; прямого подтверждения нет</td>
+</tr>
+<tr>
+<td>pyRevit на Revit 2027</td>
+<td>Поддержка с 6.0, исправления в 6.4.0 (<a href="http://pyrevitlabs.io/posts/6.4.0-release/" target="_blank" rel="noopener">pyRevit</a>)</td>
+<td>У пользователя 6.4.0 не строил ленту на 2027 (<a href="https://github.com/pyrevitlabs/pyRevit/issues/3441" target="_blank" rel="noopener">GitHub</a>)</td>
+<td>Проверить на своей машине до пилота</td>
+</tr>
+<tr>
+<td>Экспорт инженерных систем в IFC4</td>
+<td>Есть готовая настройка «IFC4 Reference View [BuildingService]»</td>
+<td>Autodesk: экспорт MEP в этом режиме «всё ещё в разработке» (<a href="https://up1.autodesk.com/2026/RVT/ADSKIFCExporterHelp_26_4_1.htm" target="_blank" rel="noopener">Autodesk</a>)</td>
+<td>Классы и наборы свойств ОВ проверять на реальном файле</td>
+</tr>
+<tr>
+<td>Какое постановление регулирует ЦИМ</td>
+<td>ПП № 1431 в статье практиков (<a href="https://revitserver.ru/gosekspertiza-i-bim/" target="_blank" rel="noopener">revitserver.ru</a>)</td>
+<td>ПП № 614 действует с 01.09.2024 вместо 1431 (<a href="http://publication.pravo.gov.ru/document/0001202405170050" target="_blank" rel="noopener">pravo.gov.ru</a>)</td>
+<td>Ссылка на 1431 устарела, технические советы статьи остаются полезными</td>
+</tr>
+</tbody>
+</table></div>
+<p>Кроме прямых противоречий, в исследовании остались места, которые проверить не удалось:</p>
+<ul>
+<li>тексты требований Главгосэкспертизы и Мосгосэкспертизы к классам IFC и наборам свойств для ОВ: PDF скачались, но не прочитались. По пересказу поиска Мосгосэкспертиза использует классы IfcDuctSegment и IfcDuctFitting, но это не подтверждено;</li>
+<li>как изменились графы основной надписи в ГОСТ Р 21.101-2026;</li>
+<li>цены BIM2B Template Tools 3.x, BFSP Replacer и шаблона схем МЕКО;</li>
+<li>поддержка Revit 2026–2027 у «Два Облака», PikTools и FutureBIM;</li>
+<li>совпадение штатного метода Revit «Altshul-Tsal» с российской формулой Альтшуля;</li>
+<li>поведение модели с нашим расчётным сервером на компьютере без надстройки;</li>
+<li>пороги толщины стенки при огнезащите, которые приводит Муратов, — со сверкой по приложению К СП 60;</li>
+<li>независимая точность плагинов МЕКО, «Два Облака» и Anlax, а также ИИ-сервисов по нормам.</li>
+</ul>
+<h2>Заключение</h2>
+<p>Главный сдвиг в понимании: «российский Revit» — это прежде всего порядок в данных, а не программа. Шаблон ADSK с кодами-GUID в ФОП уже решает оформление почти бесплатно. Слабое место не в коде, а в двух таблицах, которых нет ни у кого в проверенном виде. Первая — нормы воздухообмена по типам помещений со ссылками на пункты. Вторая — климат СП 131.13330.2025. Кто первым заведёт их аккуратно и с редакциями, получит основу сразу для трёх вещей: расчётного скрипта, автопроверки и ИИ-помощника, который не выдумывает пункты, потому что отвечает только по этой таблице. Поэтому пилот стоит мерить не строчками кода, а качеством таблицы норм и совпадением с ручным расчётом.</p>
+<p>Второй вывод — о том, куда не тратить силы. Большие расчётные модули (теплопотери, аэродинамика) и схемы по ГОСТ уже делают или вот-вот сделают МЕКО, «Два Облака» и Anlax. Revit к тому же пускает чужую формулу внутрь только для потерь давления. Выгоднее строить то, что соединяет готовое: слой «нормы → пространства → системы → общие данные и задания» и проверку этой цепочки. Расчётные движки при этом лучше покупать, а не писать заново. ИИ в этой схеме полезен как голосовой пульт к проверенным командам и как быстрый помощник при их написании. Как источник цифр для экспертизы он не годится.</p>
+<footer><a href="../" target="_self">К оглавлению витрины</a></footer>
+</main>
+</body>
+</html>
