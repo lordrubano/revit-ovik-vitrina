@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#0f7c86">
+<title>Как ставится Пульт ОВиК на предприятии</title>
+<meta name="description" content="Надстройка не серверная: где она живёт при разном устройстве предприятия, что кладёт на компьютер, чего не делает и где нужен администратор.">
+<meta property="og:title" content="Как ставится Пульт ОВиК на предприятии">
+<meta property="og:description" content="Надстройка не серверная: где она живёт при разном устройстве предприятия, что кладёт на компьютер, чего не делает и где нужен администратор.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230f7c86'/%3E%3Cpath d='M7 12h13a3 3 0 1 0-3-3M7 17h17a3 3 0 1 1-3 3M7 22h8' fill='none' stroke='white' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{color-scheme:light dark;
+--bg:#f4f8f8;--card:#ffffff;--fg:#172427;--muted:#485d61;--line:#d3e2e3;
+--acc:#0f7c86;--acc-d:#0b5f68;--acc-sv:#e3f4f5;--link:#0b6a73;--on-acc:#ffffff;
+--ok-bg:#dff2e5;--ok-fg:#175c31;--warn-bg:#fcefc9;--warn-fg:#6d4c00;--bad-bg:#fadcdc;--bad-fg:#9a1f25;
+--maket-bg:#eef6f7;--maket-fg:#1d3d44;--shadow:0 1px 2px rgba(12,50,56,.08),0 4px 14px rgba(12,50,56,.06)}
+@media (prefers-color-scheme:dark){:root{
+--bg:#0e1819;--card:#162326;--fg:#e3eeef;--muted:#a5babd;--line:#2a4144;
+--acc:#0f7c86;--acc-d:#0b5f68;--acc-sv:#173338;--link:#6fd3dc;--on-acc:#ffffff;
+--ok-bg:#173a22;--ok-fg:#93dfab;--warn-bg:#413312;--warn-fg:#f2cf7a;--bad-bg:#43191c;--bad-fg:#f4a3a7;
+--maket-bg:#132a2e;--maket-fg:#c9e4e8;--shadow:none}}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--fg);
+font:17px/1.6 "Segoe UI","Segoe UI Variable Text",system-ui,-apple-system,Roboto,"Helvetica Neue",Arial,sans-serif;
+-webkit-font-smoothing:antialiased;overflow-wrap:break-word}
+.wrap{max-width:1000px;margin:0 auto;padding:0 16px}
+.wrap.shir{max-width:1140px}
+a{color:var(--link);text-underline-offset:3px}
+a:focus-visible,button:focus-visible,.tw:focus-visible{outline:3px solid var(--acc);outline-offset:2px;border-radius:4px}
+img,video{max-width:100%;height:auto;display:block}
+h1,h2,h3{line-height:1.25;margin:0}
+h2{font-size:1.65rem;margin:0 0 .5em;scroll-margin-top:12px}
+h3{font-size:1.2rem;margin:1.6em 0 .5em;scroll-margin-top:12px;color:var(--acc-d)}
+@media (prefers-color-scheme:dark){h3{color:#7fd6de}}
+p{margin:.6em 0}
+ul,ol{padding-left:1.3em;margin:.6em 0}
+li{margin:.35em 0}
+code{font:.97em Consolas,"Cascadia Mono",monospace;background:var(--acc-sv);padding:.05em .35em;border-radius:4px}
+td code,th code,.zamet code{font-size:1em}
+/* шапка */
+.shapka{background:linear-gradient(135deg,#0f7c86,#0b5f68);color:#fff;padding:28px 0 30px}
+.shapka a{color:#fff}
+.shapka .nazad{display:inline-flex;align-items:center;min-height:44px;font-size:16px;margin:-8px 0 6px;text-decoration:none;font-weight:600}
+.shapka .nazad:hover{text-decoration:underline}
+.znachok{display:inline-block;font-size:15px;font-weight:600;letter-spacing:.02em;background:rgba(255,255,255,.18);border-radius:99px;padding:4px 12px;margin-bottom:12px}
+.shapka h1{font-size:2.1rem;font-weight:700}
+.shapka .sut{font-size:1.15rem;line-height:1.5;margin:.7em 0 0;max-width:46em;opacity:.97}
+.maket{margin:18px 0 0;padding:12px 16px;border-left:4px solid #9fe3e9;background:rgba(255,255,255,.14);border-radius:0 8px 8px 0;font-size:16px;line-height:1.5}
+/* навигация */
+.nav{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 6px;padding:0;list-style:none}
+.nav li{margin:0}
+.nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 16px;border:1px solid var(--line);border-radius:99px;background:var(--card);text-decoration:none;font-size:16px;font-weight:600}
+.nav a:hover{border-color:var(--acc)}
+/* секции */
+main{padding-bottom:12px}
+section{margin:38px 0}
+.lid{color:var(--muted);margin:.2em 0 1em}
+.kart-blok{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow)}
+.kn{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 26px;background:var(--acc);color:var(--on-acc);border:0;border-radius:10px;font:600 1.1rem/1.2 inherit;font-family:inherit;text-decoration:none;box-shadow:0 3px 10px rgba(15,124,134,.3)}
+.kn:hover{background:var(--acc-d)}
+.kn.vtor{background:transparent;color:var(--link);border:2px solid var(--acc);box-shadow:none}
+.kn.vtor:hover{background:var(--acc-sv)}
+.knr{display:flex;flex-wrap:wrap;gap:12px;margin:14px 0 22px}
+.ekrany{display:grid;gap:20px;margin:6px 0 0}
+.ekrany figure{margin:0}
+.ekrany img{border:1px solid var(--line);border-radius:10px;background:#1d232b;box-shadow:var(--shadow)}
+.ekrany figcaption{font-size:15px;color:var(--muted);margin-top:8px;line-height:1.4}
+.ekrany .tel{max-width:280px;margin:0 auto}
+@media (min-width:900px){.ekrany{grid-template-columns:1.7fr .8fr 1.7fr;align-items:end}.ekrany .tel{max-width:none;margin:0}}
+/* ролики */
+.roliki .zaglushka{border:2px dashed var(--line);border-radius:14px;padding:20px;background:var(--card)}
+.roliki .zaglushka strong{font-size:1.15rem}
+.roliki .pleery{display:none;gap:22px;grid-template-columns:1fr;align-items:start}
+.roliki.gotovo .pleery{display:grid}
+.roliki.gotovo .zaglushka{display:none}
+.pleery figure{margin:0}
+.pleery video{width:100%;background:#000;border-radius:10px;aspect-ratio:16/9}
+.pleery .vert video{aspect-ratio:9/16;max-height:78vh;margin:0 auto}
+.pleery .vert{max-width:340px;margin:0 auto}
+.pleery figcaption{font-size:15px;color:var(--muted);margin-top:8px}
+@media (min-width:900px){.roliki .pleery{grid-template-columns:2fr 1fr}}
+/* плитки */
+.plitki{display:grid;gap:16px;grid-template-columns:1fr}
+@media (min-width:760px){.plitki.tri{grid-template-columns:repeat(3,1fr)}}
+.plitka{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--acc);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+.plitka h3{margin:0 0 .35em;font-size:1.2rem}
+.plitka p{margin:.3em 0}
+.dvakol{display:grid;gap:16px;grid-template-columns:1fr}
+@media (min-width:760px){.dvakol{grid-template-columns:1fr 1fr}}
+.spisok-gal{list-style:none;padding:0;margin:.4em 0}
+.spisok-gal li{position:relative;padding-left:28px;margin:.55em 0}
+.spisok-gal li::before{content:"";position:absolute;left:4px;top:.55em;width:10px;height:10px;border-radius:50%;background:var(--acc)}
+.shagi{list-style:none;counter-reset:sh;padding:0;margin:.4em 0}
+.shagi li{counter-increment:sh;position:relative;padding:12px 14px 12px 58px;margin:10px 0;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.shagi li::before{content:counter(sh);position:absolute;left:12px;top:12px;width:34px;height:34px;border-radius:50%;background:var(--acc);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+.shagi b{display:block}
+.etapy{display:grid;gap:14px;grid-template-columns:1fr}
+@media (min-width:760px){.etapy{grid-template-columns:repeat(3,1fr)}}
+.etap{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+.etap .n{font-size:15px;font-weight:700;color:var(--acc-d);letter-spacing:.03em;text-transform:uppercase}
+@media (prefers-color-scheme:dark){.etap .n{color:#7fd6de}}
+.etap h3{margin:.25em 0 .3em;color:var(--fg)}
+.metka{display:inline-block;font-size:15px;font-weight:600;background:var(--warn-bg);color:var(--warn-fg);border-radius:99px;padding:2px 10px}
+.zamet{color:var(--muted);font-size:16px}
+.pril{display:grid;gap:14px;grid-template-columns:1fr}
+@media (min-width:760px){.pril{grid-template-columns:repeat(3,1fr)}}
+.pril a.k{display:block;height:100%;text-decoration:none;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+.pril a.k:hover{border-color:var(--acc)}
+.pril a.k b{display:block;color:var(--link);font-size:1.12rem;margin-bottom:.25em}
+.pril a.k span{color:var(--muted);font-size:16px}
+.pril .dop{margin-top:6px;font-size:16px}
+.podval{margin-top:44px;padding:22px 0 34px;border-top:1px solid var(--line);color:var(--muted);font-size:15.5px}
+.podval p{margin:.4em 0}
+/* подстраницы */
+.legenda{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:10px 0}
+.b{display:inline-block;font-size:15px;line-height:1.3;font-weight:600;border-radius:6px;padding:1px 8px;white-space:normal}
+.b.ok{background:var(--ok-bg);color:var(--ok-fg)}
+.b.vt{background:var(--warn-bg);color:var(--warn-fg)}
+.b.ne{background:var(--bad-bg);color:var(--bad-fg)}
+.toc{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:8px;grid-template-columns:1fr}
+@media (min-width:760px){.toc{grid-template-columns:1fr 1fr}}
+.toc a{display:flex;align-items:center;min-height:44px;padding:6px 14px;background:var(--card);border:1px solid var(--line);border-radius:10px;text-decoration:none;font-size:16px;line-height:1.3}
+.toc a:hover{border-color:var(--acc)}
+.toc li{margin:0}
+.dok h2{margin-top:2em;padding-top:.6em;border-top:2px solid var(--line);font-size:1.5rem}
+.dok h1{display:none}
+.tw{overflow-x:auto;-webkit-overflow-scrolling:touch;border:1px solid var(--line);border-radius:10px;background:var(--card);margin:12px 0}
+table{border-collapse:collapse;width:100%;font-size:15px;line-height:1.45}
+th,td{padding:8px 10px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{background:var(--acc-sv);font-weight:600}
+tr:last-child td{border-bottom:0}
+.tw.prokr table{min-width:520px}
+.tw.kartochki table{min-width:980px}
+.podsk{display:none;font-size:15px;color:var(--muted);margin:10px 0 -6px}
+@media (max-width:899px){
+ .podsk{display:block}
+ .tw.kartochki{border:0;background:transparent;overflow:visible;margin:10px 0}
+ .tw.kartochki table{min-width:0}
+ .kartochki table,.kartochki tbody,.kartochki tr,.kartochki td{display:block;width:100%}
+ .kartochki thead{display:none}
+ .kartochki tr{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:10px;margin:12px 0;padding:6px 4px;box-shadow:var(--shadow)}
+ .kartochki td{border:0;padding:6px 12px}
+ .kartochki td:empty{display:none}
+ .kartochki td::before{content:attr(data-label);display:block;font-size:15px;font-weight:600;color:var(--muted)}
+ .kartochki td:first-child{font-weight:600}
+ .kartochki td:first-child::before{font-weight:600;display:inline;margin-right:.45em}
+ .podsk.k{display:none}
+}
+details.vse{margin:14px 0;border:1px solid var(--line);border-radius:12px;background:var(--card);padding:0 14px}
+details.vse>summary{cursor:pointer;min-height:44px;display:flex;align-items:center;font-weight:600;color:var(--link);padding:8px 0;list-style-position:inside;line-height:1.35}
+details.vse[open]>summary{border-bottom:1px solid var(--line);margin-bottom:8px}
+details.vse .tw{margin:8px 0 14px}
+.dok a{word-break:break-word}
+.dok li a{overflow-wrap:anywhere}
+@media (max-width:520px){
+ .shapka h1{font-size:1.65rem}
+ h2{font-size:1.4rem}
+ .shapka{padding:20px 0 24px}
+ .kn{width:100%}
+ .knr{gap:10px}
+}
+@media (max-height:480px) and (orientation:landscape){
+ .shapka{padding:14px 0 16px}
+ section{margin:26px 0}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+.sx{width:100%;max-width:440px;height:auto;display:block;margin:0 auto}
+.sx .t{font:600 16px "Segoe UI",system-ui,sans-serif;fill:var(--fg)}
+.sx .tb{font:700 16px "Segoe UI",system-ui,sans-serif;fill:var(--fg)}
+.sx .tm{font:600 16px "Segoe UI",system-ui,sans-serif;fill:var(--fg)}
+.sx .tn{font:600 16px "Segoe UI",system-ui,sans-serif;fill:var(--muted)}
+.sx .tw{font:700 17px "Segoe UI",system-ui,sans-serif;fill:#fff}
+.sx .ws{fill:var(--card);stroke:var(--line);stroke-width:2}
+.sx .rv{fill:var(--acc-sv);stroke:var(--acc);stroke-width:2}
+.sx .pult{fill:#0f7c86}
+.sx .srv{fill:var(--gray-bg);stroke:var(--gray-line);stroke-width:2;stroke-dasharray:6 4}
+.sx .adm{fill:var(--warn-bg);stroke:var(--warn-line);stroke-width:2}
+.sx .pol{fill:var(--warn-bg);stroke:var(--warn-line);stroke-width:2}
+.sx .ar{stroke:var(--muted);stroke-width:2.5;fill:none}
+.sx .ar.dash{stroke:var(--gray-line);stroke-dasharray:5 5}
+.sx .arh{fill:var(--muted)}
+
+:root{--gray-bg:#eef2f2;--gray-line:#a9b9ba;--warn-line:#d6b25a;--pr-bg:#dcecf7;--pr-fg:#0f4a72;--vy-bg:#e6e9ea;--vy-fg:#3e4f52}
+@media (prefers-color-scheme:dark){:root{--gray-bg:#1c2a2d;--gray-line:#587075;--warn-line:#8a7130;--pr-bg:#173649;--pr-fg:#a9d6f5;--vy-bg:#2a3a3e;--vy-fg:#c5d3d5}}
+.b.pr{background:var(--pr-bg);color:var(--pr-fg)}
+.b.vy{background:var(--vy-bg);color:var(--vy-fg)}
+.sn{font-size:15px;text-decoration:none;margin-left:2px;white-space:nowrap}
+.otvet{margin:20px 0 4px;background:var(--card);border:1px solid var(--line);border-left:6px solid var(--acc);border-radius:12px;padding:16px 20px;box-shadow:var(--shadow);font-size:1.12rem;line-height:1.5}
+.otvet p{margin:.45em 0}
+.otvet .ot{font-weight:700;color:var(--acc-d);margin:0 0 .15em;font-size:1rem;letter-spacing:.02em;text-transform:uppercase}
+@media (prefers-color-scheme:dark){.otvet .ot{color:#7fd6de}}
+.glav{display:grid;gap:14px;grid-template-columns:1fr;counter-reset:g;margin:8px 0}
+@media (min-width:860px){.glav{grid-template-columns:repeat(2,1fr)}}
+.glav .g{counter-increment:g;background:var(--card);border:1px solid var(--line);border-top:4px solid var(--acc);border-radius:12px;padding:16px 18px 16px;box-shadow:var(--shadow);position:relative}
+.glav .g::before{content:counter(g);display:inline-flex;width:34px;height:34px;border-radius:50%;background:var(--acc);color:#fff;font-weight:700;align-items:center;justify-content:center;margin-bottom:8px}
+.glav .g b{display:block;font-size:1.1rem;margin-bottom:.25em}
+.var{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin:20px 0;overflow:hidden;scroll-margin-top:12px}
+.var>header{display:flex;gap:14px;align-items:center;padding:14px 18px;background:var(--acc-sv);border-bottom:1px solid var(--line)}
+.var .lt{flex:none;width:44px;height:44px;border-radius:50%;background:var(--acc);color:#fff;font-weight:700;font-size:1.3rem;display:flex;align-items:center;justify-content:center}
+.var h3{margin:0;font-size:1.2rem;line-height:1.3;color:var(--fg)}
+.var header p{margin:.15em 0 0;color:var(--muted);font-size:16px}
+.var .tel{display:grid;gap:18px;grid-template-columns:1fr;padding:16px 18px 18px}
+@media (min-width:900px){.var .tel{grid-template-columns:1.35fr 1fr;align-items:start}}
+.var dl{margin:0}
+.var dt{font-weight:700;margin-top:.9em;color:var(--acc-d)}
+@media (prefers-color-scheme:dark){.var dt{color:#7fd6de}}
+.var dt:first-child{margin-top:0}
+.var dd{margin:.15em 0 0}
+.var figure{margin:0}
+.var figcaption{font-size:15px;color:var(--muted);margin-top:8px;text-align:center}
+.pilot ol{list-style:none;counter-reset:p;padding:0;margin:8px 0}
+.pilot ol li{counter-increment:p;position:relative;padding:12px 14px 12px 58px;margin:10px 0;background:var(--card);border:1px solid var(--line);border-radius:12px}
+.pilot ol li::before{content:counter(p);position:absolute;left:12px;top:12px;width:34px;height:34px;border-radius:50%;background:var(--acc);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+.pilot ol li b{display:block}
+.src ol{padding-left:0;list-style:none;margin:8px 0}
+.src li{display:grid;grid-template-columns:2.4em 1fr;gap:6px;margin:.5em 0;scroll-margin-top:12px}
+.src li .n{color:var(--muted);font-weight:600}
+.src .k{display:inline-block;font-size:15px;font-weight:600;border-radius:6px;padding:0 8px;margin-right:6px;background:var(--acc-sv);color:var(--acc-d)}
+.src .k.d{background:var(--gray-bg);color:var(--muted)}
+@media (prefers-color-scheme:dark){.src .k{color:#7fd6de}}
+.src a{overflow-wrap:anywhere}
+.uslov{display:grid;gap:6px;margin:8px 0}
+.faq h3{font-size:1.1rem;margin:1.2em 0 .3em;color:var(--fg)}
+.spisok-x{padding-left:1.2em}
+.spisok-x li{margin:.4em 0}
+.gloss dt{font-weight:700;margin-top:.6em}
+.gloss dd{margin:.1em 0 0}
+.tw.kartochki td:first-child{white-space:normal}
+</style>
+</head>
+<body>
+<header class="shapka"><div class="wrap">
+<span class="znachok">Для инженера и администратора</span>
+<h1>Как ставится Пульт ОВиК на предприятии</h1>
+<p class="sut">Надстройка ещё не выпущена; здесь — как она будет устанавливаться. Механизм — стандартный для надстроек Revit: так же подключаются, например, ModPlus и pyRevit.</p>
+</div></header>
+
+<main class="wrap">
+<div class="otvet" role="note" aria-label="Короткий ответ">
+<p class="ot">Коротко</p>
+<p><b>Серверы моделей и лицензий надстройка не трогает.</b> Она ставится туда, где запущен Revit: обычно — на компьютер инженера; если Revit на терминальном сервере — на этот сервер.</p>
+<p><b>Администратор нужен</b> при централизованной установке (B), на терминальном сервере (C), при строгих политиках запуска (D) и везде, где установка программ согласуется с ИТ. На своём компьютере (A) технически права администратора не нужны.</p>
+</div>
+
+<ul class="nav" aria-label="Разделы страницы">
+<li><a href="#glavnoe">Главное</a></li>
+<li><a href="#varianty">Как у вас устроено</a></li>
+<li><a href="#chto-kladet">Что кладёт на компьютер</a></li>
+<li><a href="#pervyy-zapusk">Первый запуск</a></li>
+<li><a href="#dannye">Данные и сеть</a></li>
+<li><a href="#voprosy">Вопросы</a></li>
+<li><a href="#pilot">Пилот с ИТ</a></li>
+<li><a href="#istochniki">Источники</a></li>
+</ul>
+
+<section id="glavnoe" aria-labelledby="h-gl">
+<h2 id="h-gl">Главное</h2>
+<div class="glav">
+<div class="g"><b>Это не серверная программа.</b>Это библиотека, которая загружается внутрь Revit на том компьютере, где он запущен. Отдельного процесса механизм не создаёт. <a class="sn" href="#s-deploy" aria-label="Источник 1">[1]</a></div>
+<div class="g"><b>Серверы она не трогает.</b>Сервер с моделями (файловый, Revit Server, облако Autodesk) и сервер лицензий надстройка не трогает. Она ставится туда, где запущен Revit: обычно — на компьютер инженера; если Revit работает на терминальном сервере — туда же, силами администратора. Правки попадают в центральную модель обычной синхронизацией. <span class="b vy">вывод из документации</span> <a class="sn" href="#s-deploy" aria-label="Источник 1">[1]</a><a class="sn" href="#s-collab" aria-label="Источник 16">[16]</a><a class="sn" href="#s-rserver" aria-label="Источник 17">[17]</a><a class="sn" href="#s-cloud" aria-label="Источник 18">[18]</a></div>
+<div class="g"><b>Служб, драйверов, портов и интернета не нужно.</b> <span class="b pr">так мы её делаем</span> Службы Windows, драйверы, открытые порты и интернет установщику и надстройке не нужны.</div>
+<div class="g"><b>Где нужен администратор.</b>Вариант B (централизованная установка), C (терминальный сервер или виртуальный рабочий стол), D (строгие политики запуска) и везде, где установка программ согласуется с ИТ. Вариант A технически обходится без прав администратора — если правила предприятия это позволяют.</div>
+</div>
+<p class="zamet">Загрузка надстройки не зависит от сервера лицензий и от типа лицензии Revit: в регистрации надстройки таких параметров нет (отдельной фразы Autodesk об этом нет — это вывод по устройству механизма). Revit LT надстройки не поддерживает вообще. <a class="sn" href="#s-lt" aria-label="Источник 10">[10]</a><a class="sn" href="#s-reg27" aria-label="Источник 2">[2]</a></p>
+</section>
+
+<section id="kak-chitat" aria-labelledby="h-kc">
+<h2 id="h-kc">Как читать</h2>
+<div class="uslov">
+<div><span class="b pr">так мы её делаем</span> — проектное решение: надстройки ещё нет, это то, как мы её делаем.</div>
+<div><span class="b vy">вывод из документации</span> — прямого утверждения в документации нет; вывод по устройству механизма.</div>
+<div><span class="b vt">проверим на пилоте</span> — в источниках не подтверждено; не выдаём за факт.</div>
+<div><a class="sn" href="#istochniki">[1]</a> — номер источника в списке внизу. Там же помечено, чья это документация: Autodesk или другой источник (форумы, Microsoft, разработчики надстроек). Незнакомые слова — в словарике перед источниками.</div>
+</div>
+</section>
+
+<section id="varianty" aria-labelledby="h-var">
+<h2 id="h-var">Как у вас устроено?</h2>
+<p class="lid">Выберите свой вариант. Все четыре описаны ниже, ничего не скрыто. Если у вас сочетание (например, Revit на терминальном сервере и строгие политики) — читайте оба.</p>
+<ul class="nav" aria-label="Варианты устройства"><li><a href="#v-a">Вариант A</a></li><li><a href="#v-b">Вариант B</a></li><li><a href="#v-c">Вариант C</a></li><li><a href="#v-d">Вариант D</a></li></ul>
+<article class="var" id="v-a" aria-labelledby="vh-a"><header><span class="lt" aria-hidden="true">A</span><div><h3 id="vh-a">Вариант A. Revit на компьютере инженера, модели на сервере</h3><p>Самый частый вариант.</p></div></header><div class="tel"><dl><dt>Где работает Revit</dt><dd>На компьютере инженера. Модель лежит на сервере (файловом, Revit Server или в облаке Autodesk), а у инженера — локальная копия, из которой он синхронизируется с центральной моделью. <a class="sn" href="#s-collab" aria-label="Источник 16">[16]</a><a class="sn" href="#s-rserver" aria-label="Источник 17">[17]</a><a class="sn" href="#s-cloud" aria-label="Источник 18">[18]</a></dd><dt>Где лежит надстройка</dt><dd>На этом же компьютере, в папке надстроек Revit нужной версии; библиотека и таблицы — рядом с манифестом (см. раздел «Что установщик кладёт на компьютер»). Она загружается внутрь Revit при его запуске и выгружается вместе с ним. <a class="sn" href="#s-deploy" aria-label="Источник 1">[1]</a><a class="sn" href="#s-reg27" aria-label="Источник 2">[2]</a></dd><dt>Сервер моделей и сервер лицензий</dt><dd>Не затрагиваются. Правки, которые делает надстройка, — обычные правки модели в сеансе Revit пользователя, и в центральную модель они попадают обычной синхронизацией. У Revit Server нет отдельной серверной части для надстроек. <span class="b vy">вывод из документации</span></dd><dt>Кто ставит</dt><dd>Инженер — если это разрешено правилами предприятия; иначе ИТ. <span class="b pr">так мы её делаем</span> Установщик умеет ставить «для себя».</dd><dt>Нужен ли администратор</dt><dd>Технически права администратора не нужны: установка «для себя» идёт в папку пользователя (так пишут разработчики надстроек и участники форума Autodesk). <a class="sn" href="#s-hypar" aria-label="Источник 30">[30]</a><a class="sn" href="#s-forum27" aria-label="Источник 26">[26]</a> Но если установка программ на вашем предприятии согласуется с ИТ — согласуйте: для этого есть памятка администратору (PDF внизу страницы). Если установка запрещена или на компьютере строгие политики запуска — см. варианты B и D.</dd><dt>Проверим на пилоте</dt><dd>Установка «для себя» под Revit 2024–2026 и 2027; окно безопасности при первом запуске (см. раздел «Первый запуск»).</dd></dl><figure><svg class="sx" viewBox="0 0 320 252" role="img" aria-labelledby="ta da" xmlns="http://www.w3.org/2000/svg"><title id="ta">Схема варианта A</title><desc id="da">Revit и надстройка на компьютере инженера. Сервер моделей и сервер лицензий не затрагиваются.</desc><defs><marker id="aha" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="arh"/></marker></defs><rect x="8" y="8" width="304" height="138" rx="10" class="ws"/><text x="20" y="32" class="tb" text-anchor="left">Компьютер инженера</text><rect x="24" y="44" width="272" height="92" rx="10" class="rv"/><text x="36" y="68" class="tb" text-anchor="left">Revit</text><rect x="38" y="80" width="244" height="46" rx="8" class="pult"/><text x="160.0" y="110" class="tw" text-anchor="middle">Пульт ОВиК</text><line x1="82" y1="146" x2="82" y2="176" class="ar dash" marker-end="url(#aha)"/><line x1="238" y1="146" x2="238" y2="176" class="ar dash" marker-end="url(#aha)"/><text x="160" y="166.0" class="tn" text-anchor="middle">как обычно</text><rect x="8" y="180" width="148" height="66" rx="10" class="srv"/><text x="82.0" y="207" class="tm" text-anchor="middle">Сервер моделей</text><text x="82.0" y="229" class="tn" text-anchor="middle">не затрагивается</text><rect x="164" y="180" width="148" height="66" rx="10" class="srv"/><text x="238.0" y="207" class="tm" text-anchor="middle">Сервер лицензий</text><text x="238.0" y="229" class="tn" text-anchor="middle">не затрагивается</text></svg><figcaption>Revit и надстройка — на компьютере инженера. Стрелки к серверам — работа самого Revit, как и без надстройки; надстройка их не затрагивает.</figcaption></figure></div></article><article class="var" id="v-b" aria-labelledby="vh-b"><header><span class="lt" aria-hidden="true">B</span><div><h3 id="vh-b">Вариант B. Revit ставится централизованно (SCCM, Intune, образ)</h3><p>ИТ раздаёт программы на все компьютеры сразу.</p></div></header><div class="tel"><dl><dt>Где работает Revit</dt><dd>На компьютерах инженеров, куда его поставил ИТ из развёртывания Autodesk (сетевого образа установки).</dd><dt>Не путать два «образа»</dt><dd>Образ развёртывания Autodesk, из которого ИТ ставит сам Revit: в него включаются только расширения, опубликованные Autodesk, — сторонние надстройки в него не входят. Autodesk прямо предлагает раздавать такое ПО обычными средствами: SCCM (Microsoft Configuration Manager — система раздачи программ). <a class="sn" href="#s-ext" aria-label="Источник 11">[11]</a> Так же подключаются другие надстройки — например ModPlus, pyRevit, Ideate, DiRoots: у каждой есть MSI или установщик с тихой установкой. <a class="sn" href="#s-modplus" aria-label="Источник 29">[29]</a><a class="sn" href="#s-pyrevit" aria-label="Источник 28">[28]</a><a class="sn" href="#s-ideate" aria-label="Источник 31">[31]</a><a class="sn" href="#s-diroots" aria-label="Источник 32">[32]</a></dd><dt>Где лежит надстройка</dt><dd>На каждом компьютере, для всех пользователей: манифест — в общей папке надстроек версии, библиотека и таблицы — в <code>C:\Program Files\PultOVIK\&lt;год&gt;\</code> (постоянная папка вне профиля). <span class="b pr">так мы её делаем</span></dd><dt>Как ставится</dt><dd>Наш установщик — MSI (стандартный установочный пакет Windows). <span class="b pr">так мы её делаем</span> Ставится тем же SCCM или Intune тихо, без окон: команда вида <code>msiexec /i … /qn</code> с режимом «для всех». <a class="sn" href="#s-msiexec" aria-label="Источник 21">[21]</a></dd><dt>Сервер моделей и сервер лицензий</dt><dd>Не затрагиваются.</dd><dt>Нужен ли администратор</dt><dd>Да — как для любой программы: один раз, обычным для вас способом.</dd><dt>Проверим на пилоте</dt><dd>Тихая установка через ваш SCCM или Intune (отдельной инструкции Microsoft по Intune для надстроек Revit мы не искали); установка под Revit 2027 в новую папку.</dd></dl><figure><svg class="sx" viewBox="0 0 320 340" role="img" aria-labelledby="tb db" xmlns="http://www.w3.org/2000/svg"><title id="tb">Схема варианта B</title><desc id="db">Администратор ставит установщик надстройки через SCCM или Intune на компьютер инженера. Серверы не затрагиваются.</desc><defs><marker id="ahb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="arh"/></marker></defs><rect x="8" y="8" width="304" height="46" rx="10" class="adm"/><text x="160.0" y="37" class="tb" text-anchor="middle">SCCM / Intune — администратор</text><line x1="160" y1="54" x2="160" y2="92" class="ar" marker-end="url(#ahb)"/><text x="172" y="78" class="tm" text-anchor="start">MSI, без окон</text><rect x="8" y="96" width="304" height="138" rx="10" class="ws"/><text x="20" y="120" class="tb" text-anchor="left">Компьютер инженера</text><rect x="24" y="132" width="272" height="92" rx="10" class="rv"/><text x="36" y="156" class="tb" text-anchor="left">Revit</text><rect x="38" y="168" width="244" height="46" rx="8" class="pult"/><text x="160.0" y="198" class="tw" text-anchor="middle">Пульт ОВиК</text><line x1="82" y1="234" x2="82" y2="264" class="ar dash" marker-end="url(#ahb)"/><line x1="238" y1="234" x2="238" y2="264" class="ar dash" marker-end="url(#ahb)"/><text x="160" y="254.0" class="tn" text-anchor="middle">как обычно</text><rect x="8" y="268" width="148" height="66" rx="10" class="srv"/><text x="82.0" y="295" class="tm" text-anchor="middle">Сервер моделей</text><text x="82.0" y="317" class="tn" text-anchor="middle">не затрагивается</text><rect x="164" y="268" width="148" height="66" rx="10" class="srv"/><text x="238.0" y="295" class="tm" text-anchor="middle">Сервер лицензий</text><text x="238.0" y="317" class="tn" text-anchor="middle">не затрагивается</text></svg><figcaption>Администратор раздаёт установщик через SCCM или Intune. Работа Revit с серверами не меняется.</figcaption></figure></div></article><article class="var" id="v-c" aria-labelledby="vh-c"><header><span class="lt" aria-hidden="true">C</span><div><h3 id="vh-c">Вариант C. Revit на терминальном сервере или виртуальном рабочем столе</h3><p>Citrix, RDS, VDI: на компьютере инженера виден только экран.</p></div></header><div class="tel"><dl><dt>Где работает Revit</dt><dd>На терминальном сервере или в виртуальной машине (RDS — службы удалённых рабочих столов Windows, VDI — виртуальные рабочие столы). Компьютер инженера показывает только изображение.</dd><dt>Где лежит надстройка</dt><dd>На том же сервере или в образе виртуальной машины — туда администратор ставит любое ПО (не путать с образом развёртывания Autodesk, в который сторонние надстройки не входят). Для всех пользователей: манифест — в общей папке надстроек, библиотека и таблицы — в <code>C:\Program Files\PultOVIK\&lt;год&gt;\</code> (вне профиля). <span class="b pr">так мы её делаем</span> Так ставят и другие: bimCAT, pyRevit. <a class="sn" href="#s-bimcat" aria-label="Источник 27">[27]</a><a class="sn" href="#s-pyrevit" aria-label="Источник 28">[28]</a> Установка «на пользователя» в <code>AppData\Roaming</code> раздувает перемещаемый профиль — это наш вывод, у Autodesk отдельного текста нет. <span class="b vt">проверим на пилоте</span></dd><dt>Сервер моделей и сервер лицензий</dt><dd>Не затрагиваются. Надстройка ставится туда, где запущен Revit, — то есть на этот сервер.</dd><dt>Кто ставит</dt><dd>Администратор — один раз, на сервер или в образ. Здесь участие администратора действительно нужно.</dd><dt>Что известно про сам Revit в такой среде</dt><dd>В требованиях Revit 2024 были таблицы Citrix и VMware Horizon <a class="sn" href="#s-req24" aria-label="Источник 7">[7]</a>, по копии у партнёра — и в 2025 <a class="sn" href="#s-req25g" aria-label="Источник 8">[8]</a>. В требованиях 2026 и 2027 таблиц Citrix и VMware для клиента Revit нет; значит ли это прекращение поддержки, Autodesk не поясняет <a class="sn" href="#s-req26" aria-label="Источник 9">[9]</a><a class="sn" href="#s-req27" aria-label="Источник 6">[6]</a>. Раздел справки «Configuring Autodesk Revit for Citrix» остаётся <a class="sn" href="#s-citrix" aria-label="Источник 19">[19]</a>. Во всех случаях Autodesk не даёт заверений и гарантий по использованию продуктов в виртуальных средах. Это касается самого Revit, а не надстройки. Про Microsoft RDS и Azure Virtual Desktop отдельной страницы у Autodesk не найдено: <span class="b vt">проверим на пилоте</span> на вашем стенде.</dd><dt>Проверим на пилоте</dt><dd>Где лежат манифест и библиотека; размер перемещаемого профиля.</dd></dl><figure><svg class="sx" viewBox="0 0 320 366" role="img" aria-labelledby="tc dc" xmlns="http://www.w3.org/2000/svg"><title id="tc">Схема варианта C</title><desc id="dc">Revit и надстройка работают на терминальном сервере или в виртуальном рабочем столе; администратор ставит надстройку один раз для всех пользователей. Серверы моделей и лицензий не затрагиваются.</desc><defs><marker id="ahc" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="arh"/></marker></defs><rect x="8" y="8" width="304" height="46" rx="10" class="adm"/><text x="160.0" y="37" class="tb" text-anchor="middle">Администратор — один раз</text><line x1="160" y1="54" x2="160" y2="84" class="ar" marker-end="url(#ahc)"/><rect x="8" y="88" width="304" height="172" rx="10" class="ws"/><text x="20" y="112" class="tb" text-anchor="left">Терминальный сервер /</text><text x="20" y="134" class="tb" text-anchor="left">виртуальный рабочий стол</text><rect x="24" y="148" width="272" height="92" rx="10" class="rv"/><text x="36" y="172" class="tb" text-anchor="left">Revit</text><rect x="38" y="184" width="244" height="46" rx="8" class="pult"/><text x="160.0" y="214" class="tw" text-anchor="middle">Пульт ОВиК</text><line x1="82" y1="260" x2="82" y2="290" class="ar dash" marker-end="url(#ahc)"/><line x1="238" y1="260" x2="238" y2="290" class="ar dash" marker-end="url(#ahc)"/><text x="160" y="280.0" class="tn" text-anchor="middle">как обычно</text><rect x="8" y="294" width="148" height="66" rx="10" class="srv"/><text x="82.0" y="321" class="tm" text-anchor="middle">Сервер моделей</text><text x="82.0" y="343" class="tn" text-anchor="middle">не затрагивается</text><rect x="164" y="294" width="148" height="66" rx="10" class="srv"/><text x="238.0" y="321" class="tm" text-anchor="middle">Сервер лицензий</text><text x="238.0" y="343" class="tn" text-anchor="middle">не затрагивается</text></svg><figcaption>Администратор ставит надстройку один раз на сервер или в образ виртуальной машины. Серверы моделей и лицензий не затрагиваются.</figcaption></figure></div></article><article class="var" id="v-d" aria-labelledby="vh-d"><header><span class="lt" aria-hidden="true">D</span><div><h3 id="vh-d">Вариант D. Строгие политики запуска программ (AppLocker, App Control)</h3><p>Запускается только то, что разрешил ИТ.</p></div></header><div class="tel"><dl><dt>Где работает Revit</dt><dd>Любой вариант выше. Меняется только то, что разрешено запускать.</dd><dt>Что делают такие политики</dt><dd>В AppLocker правила для DLL (библиотек) по умолчанию выключены; если их включили, для каждой библиотеки нужно разрешающее правило. Разрешение по издателю (по цифровой подписи) — путь, который рекомендует Microsoft. Правила по умолчанию пускают библиотеки из Program Files и папки Windows, но не из AppData и ProgramData. <a class="sn" href="#s-arules" aria-label="Источник 33">[33]</a><a class="sn" href="#s-applocker" aria-label="Источник 22">[22]</a> В App Control (WDAC) разрешение по издателю удобнее всего оформить отдельной дополнительной политикой. <a class="sn" href="#s-suppl" aria-label="Источник 34">[34]</a><a class="sn" href="#s-appcontrol" aria-label="Источник 23">[23]</a></dd><dt>Что делаем мы</dt><dd><span class="b pr">так мы её делаем</span> Библиотека подписана коммерческим сертификатом общедоступного центра сертификации (не самоподписанным), с меткой времени: подпись остаётся действительной и после окончания срока сертификата. <a class="sn" href="#s-signing" aria-label="Источник 15">[15]</a><a class="sn" href="#s-stamp" aria-label="Источник 24">[24]</a> Режим «для всех» кладёт библиотеку в Program Files, куда пускают правила по умолчанию; режим «для себя» (папка AppData) правилами для DLL по умолчанию не разрешён.</dd><dt>Сервер моделей и сервер лицензий</dt><dd>Не затрагиваются.</dd><dt>Нужен ли администратор</dt><dd>Да: установка «для всех» и, возможно, правило по издателю (в App Control — дополнительная политика).</dd><dt>Проверим на пилоте</dt><dd>Включена ли на ваших рабочих станциях проверка DLL (AppLocker) или Dynamic Code Security (App Control — контроль библиотек, которые загружает .NET); как политика ведёт себя с .NET-библиотекой внутри Revit — в документации отдельно не описано.</dd></dl><figure><svg class="sx" viewBox="0 0 320 360" role="img" aria-labelledby="td dd" xmlns="http://www.w3.org/2000/svg"><title id="td">Схема варианта D</title><desc id="dd">Политика запуска приложений разрешает библиотеку надстройки по подписи издателя. Revit и надстройка на компьютере. Серверы не затрагиваются.</desc><defs><marker id="ahd" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" class="arh"/></marker></defs><rect x="8" y="8" width="304" height="68" rx="10" class="pol"/><text x="160.0" y="32" class="tb" text-anchor="middle">Политика запуска</text><text x="160.0" y="54" class="tb" text-anchor="middle">AppLocker / App Control</text><line x1="160" y1="76" x2="160" y2="112" class="ar" marker-end="url(#ahd)"/><text x="172" y="100" class="tm" text-anchor="start">по подписи</text><rect x="8" y="116" width="304" height="138" rx="10" class="ws"/><text x="20" y="140" class="tb" text-anchor="left">Компьютер инженера</text><rect x="24" y="152" width="272" height="92" rx="10" class="rv"/><text x="36" y="176" class="tb" text-anchor="left">Revit</text><rect x="38" y="188" width="244" height="46" rx="8" class="pult"/><text x="160.0" y="218" class="tw" text-anchor="middle">Пульт ОВиК</text><line x1="82" y1="254" x2="82" y2="284" class="ar dash" marker-end="url(#ahd)"/><line x1="238" y1="254" x2="238" y2="284" class="ar dash" marker-end="url(#ahd)"/><text x="160" y="274.0" class="tn" text-anchor="middle">как обычно</text><rect x="8" y="288" width="148" height="66" rx="10" class="srv"/><text x="82.0" y="315" class="tm" text-anchor="middle">Сервер моделей</text><text x="82.0" y="337" class="tn" text-anchor="middle">не затрагивается</text><rect x="164" y="288" width="148" height="66" rx="10" class="srv"/><text x="238.0" y="315" class="tm" text-anchor="middle">Сервер лицензий</text><text x="238.0" y="337" class="tn" text-anchor="middle">не затрагивается</text></svg><figcaption>Политика запуска пускает библиотеку по подписи издателя. Всё остальное — как в варианте A.</figcaption></figure></div></article>
+</section>
+
+<section id="chto-kladet" aria-labelledby="h-kl">
+<h2 id="h-kl">Что установщик кладёт на компьютер</h2>
+<p><span class="b pr">так мы её делаем</span> Манифест <code>.addin</code> (короткий файл, по которому Revit находит надстройку); папку <code>PultOVIK</code> с библиотекой и файлами таблиц норм и каталогов оборудования; запись в списке «Удаление программ». В манифесте записан полный путь к библиотеке, как описано в руководстве разработчика Autodesk. <a class="sn" href="#s-reg27" aria-label="Источник 2">[2]</a><a class="sn" href="#s-reg26" aria-label="Источник 3">[3]</a> Для каждой версии Revit ставится своя версия библиотеки. <a class="sn" href="#s-net8" aria-label="Источник 5">[5]</a><a class="sn" href="#s-req27" aria-label="Источник 6">[6]</a><a class="sn" href="#s-req26" aria-label="Источник 9">[9]</a></p>
+<h3>Манифест: папки по версиям Revit</h3>
+<div class="tw kartochki" role="region" tabindex="0" aria-label="Папки манифеста по версиям Revit"><table><thead><tr><th scope="col">Версия Revit</th><th scope="col">Манифест «для себя» (технически права администратора не нужны)</th><th scope="col">Манифест «для всех» (установщик запрашивает права администратора)</th></tr></thead><tbody><tr><td data-label="Версия Revit">2024</td><td data-label="Манифест «для себя» (технически права администратора не нужны)"><code>%AppData%\<wbr>Autodesk\<wbr>Revit\<wbr>Addins\<wbr>2024</code></td><td data-label="Манифест «для всех» (установщик запрашивает права администратора)"><code>C:\<wbr>ProgramData\<wbr>Autodesk\<wbr>Revit\<wbr>Addins\<wbr>2024</code></td></tr><tr><td data-label="Версия Revit">2025</td><td data-label="Манифест «для себя» (технически права администратора не нужны)"><code>%AppData%\<wbr>Autodesk\<wbr>Revit\<wbr>Addins\<wbr>2025</code></td><td data-label="Манифест «для всех» (установщик запрашивает права администратора)"><code>C:\<wbr>ProgramData\<wbr>Autodesk\<wbr>Revit\<wbr>Addins\<wbr>2025</code></td></tr><tr><td data-label="Версия Revit">2026</td><td data-label="Манифест «для себя» (технически права администратора не нужны)"><code>%AppData%\<wbr>Autodesk\<wbr>Revit\<wbr>Addins\<wbr>2026</code></td><td data-label="Манифест «для всех» (установщик запрашивает права администратора)"><code>C:\<wbr>ProgramData\<wbr>Autodesk\<wbr>Revit\<wbr>Addins\<wbr>2026</code></td></tr><tr><td data-label="Версия Revit">2027</td><td data-label="Манифест «для себя» (технически права администратора не нужны)"><code>%AppData%\<wbr>Autodesk\<wbr>Revit\<wbr>Addins\<wbr>2027</code></td><td data-label="Манифест «для всех» (установщик запрашивает права администратора)"><code>C:\<wbr>Program Files\<wbr>Autodesk\<wbr>Revit\<wbr>Addins\<wbr>2027</code></td></tr></tbody></table></div>
+<p class="zamet">Наш установщик в режиме «для всех» запрашивает права администратора: запись в Program Files их требует. <a class="sn" href="#s-pyrevit3034" aria-label="Источник 35">[35]</a> В Revit 2027 общая папка переехала: в <code>ProgramData</code> Revit 2027 больше не смотрит. <a class="sn" href="#s-sdk27" aria-label="Источник 4">[4]</a><a class="sn" href="#s-reg27" aria-label="Источник 2">[2]</a> Папку в Program Files установка Revit не создаёт (по сообщениям на форуме Autodesk); наш установщик создаёт её сам. <a class="sn" href="#s-forum27" aria-label="Источник 26">[26]</a> Установка «для всех» в 2027 — <span class="b vt">проверим на пилоте</span>. В справке Autodesk 2025–2027 папка записана как «Addins\Revit 2027», на деле она называется просто «Addins\2027»; ориентируйтесь на реальный вид.</p>
+<h3>Библиотека и таблицы: куда ложатся</h3>
+<p><span class="b pr">так мы её делаем</span></p>
+<div class="tw kartochki" role="region" tabindex="0" aria-label="Куда ложатся библиотека и таблицы"><table><thead><tr><th scope="col">Режим</th><th scope="col">Библиотека и таблицы</th><th scope="col">Для политик запуска</th></tr></thead><tbody><tr><td data-label="Режим">Для себя</td><td data-label="Библиотека и таблицы"><code>%AppData%\<wbr>Autodesk\<wbr>Revit\<wbr>Addins\<wbr>&lt;год&gt;\<wbr>PultOVIK\<wbr></code> — рядом с манифестом</td><td data-label="Для политик запуска">Папка AppData правилами для DLL по умолчанию не разрешена (AppLocker пускает Program Files и папку Windows).</td></tr><tr><td data-label="Режим">Для всех</td><td data-label="Библиотека и таблицы"><code>C:\<wbr>Program Files\<wbr>PultOVIK\<wbr>&lt;год&gt;\<wbr></code> — постоянная папка вне профиля; манифест лежит в общей папке надстроек версии</td><td data-label="Для политик запуска">Program Files подпадает под правила по умолчанию.</td></tr></tbody></table></div>
+<h3>Версии Revit и платформа .NET</h3>
+<div class="tw kartochki" role="region" tabindex="0" aria-label="Версии Revit и платформа .NET"><table><thead><tr><th scope="col">Версия Revit</th><th scope="col">Платформа .NET</th><th scope="col">Примечание</th></tr></thead><tbody><tr><td data-label="Версия Revit">2024</td><td data-label="Платформа .NET">.NET Framework 4.8</td><td data-label="Примечание"></td></tr><tr><td data-label="Версия Revit">2025</td><td data-label="Платформа .NET">.NET 8</td><td data-label="Примечание"></td></tr><tr><td data-label="Версия Revit">2026</td><td data-label="Платформа .NET">.NET 8</td><td data-label="Примечание">В требованиях сказано, что для версий 2026.5 и позже нужен .NET 10; что при этом меняется для надстроек, не выяснено. <span class="b vt">проверим на пилоте</span></td></tr><tr><td data-label="Версия Revit">2027</td><td data-label="Платформа .NET">.NET 10</td><td data-label="Примечание">Только Windows 11.</td></tr></tbody></table></div>
+<p class="zamet">Под каждую платформу библиотека собирается отдельно. <a class="sn" href="#s-net8" aria-label="Источник 5">[5]</a><a class="sn" href="#s-req26" aria-label="Источник 9">[9]</a><a class="sn" href="#s-req27" aria-label="Источник 6">[6]</a></p>
+<h3>Чего установщик и надстройка не делают</h3>
+<p><span class="b pr">так мы её делаем</span></p>
+<ul class="spisok-x">
+<li>не создают службы Windows и не ставят драйверы;</li>
+<li>не добавляют себя в автозагрузку и не создают задания планировщика;</li>
+<li>не открывают сетевые порты и не ходят в интернет для работы;</li>
+<li>не меняют сам Revit и его настройки;</li>
+<li>ничего не меняют на серверах.</li>
+</ul>
+<p class="zamet">Сам механизм надстроек Revit этого не требует, но и не запрещает: службы, порты, автообновление — свойства конкретных надстроек, а не механизма. Доказать отсутствие «на слово» нельзя, поэтому это проверяется: на тестовой машине сравните список файлов, служб, автозагрузки и записей реестра до и после установки. <a class="sn" href="#s-deploy" aria-label="Источник 1">[1]</a> <span class="b vt">проверим на пилоте</span></p>
+</section>
+
+<section id="pervyy-zapusk" aria-labelledby="h-pz">
+<h2 id="h-pz">Первый запуск: окно безопасности Revit</h2>
+<ul class="spisok-x">
+<li><b>Надстройка без подписи.</b> Revit спросит: «Всегда загружать», «Загрузить один раз» или «Не загружать». Запоминается только «Всегда загружать»; при «Загрузить один раз» окно появится снова. Пока это тот же файл в том же месте, окна не будет; после обновления библиотеки оно может появиться снова (так пишут на форуме Autodesk). <a class="sn" href="#s-unsigned" aria-label="Источник 13">[13]</a></li>
+<li><b>Надстройка с цифровой подписью.</b> Окно показывает издателя; можно открыть сертификат. «Всегда загружать» запоминает издателя: его файлы, в том числе обновления, дальше загружаются без окна. <a class="sn" href="#s-signed" aria-label="Источник 14">[14]</a> Это главный довод за подпись. <span class="b pr">так мы её делаем</span> Наша библиотека подписана, поэтому в окне Revit видно, кто издатель.</li>
+<li><b>Можно ли убрать окно для всех заранее?</b> По словам специалиста Autodesk, администратор может разослать сертификат издателя на компьютеры групповой политикой — тогда для подписанной надстройки окна не будет. <a class="sn" href="#s-tbc" aria-label="Источник 20">[20]</a> В справке Autodesk этого нет: <span class="b vt">проверим на пилоте</span>, в том числе в какое хранилище сертификатов класть сертификат.</li>
+<li><b>(Admin) Add-Ins Manager</b> — Revit 2025.4 и новее. Администратор задаёт для каждой сторонней надстройки: «управляется пользователем», «всегда включена» или «всегда отключена» и может запретить все, кроме списка доверенных. Файл настроек рассылается на компьютеры. <a class="sn" href="#s-admin" aria-label="Источник 12">[12]</a> Убирает ли «всегда включена» окно безопасности — в документации не сказано: <span class="b vt">проверим на пилоте</span>.</li>
+</ul>
+</section>
+
+<section id="dannye" aria-labelledby="h-dn">
+<h2 id="h-dn">Данные и сеть</h2>
+<div class="kart-blok"><ul class="spisok-gal">
+<li>Модель не покидает компьютер: расчёт локальный, интернет для работы не нужен. <span class="b pr">так мы её делаем</span></li>
+<li>Ключ активации нашего продукта включается без интернета (это про наш продукт, не про лицензии Revit); обновления — по желанию, а не автоматически. <span class="b pr">так мы её делаем</span></li>
+<li>ИИ-модуля в первой версии нет. Если он появится, то как отдельный модуль, по умолчанию выключенный; включает его ИТ, и при включении данные уходят в выбранный ИИ-сервис. <span class="b pr">так мы её делаем</span></li>
+</ul></div>
+<h3>Что надстройка добавляет в модель</h3>
+<p><span class="b pr">так мы её делаем</span> Результаты расчёта надстройка записывает в параметры элементов модели. Там, где нет подходящих параметров ADSK, она добавляет свои — после синхронизации их видят все участники модели. Согласуйте это с BIM-менеджером. По возможности мы используем параметры ADSK; свои — с понятным префиксом.</p>
+</section>
+
+<section id="voprosy" class="faq" aria-labelledby="h-fq">
+<h2 id="h-fq">Частые вопросы</h2>
+<h3>Мне не дадут поставить. Что делать?</h3>
+<p>Не обходить ИТ. Покажите администратору эту страницу и памятку: в вариантах B, C и D администратор нужен по существу, и там всё описано. Для пилота попросите ИТ выделить тестовый компьютер или виртуальную машину; копию модели берите с разрешения руководителя проекта и по правилам предприятия.</p>
+<h3>Изменит ли это Revit?</h3>
+<p>Сам Revit, его файлы и настройки надстройка не меняет. Она работает внутри Revit, и её ошибка, как у любой надстройки, может закрыть сеанс, — поэтому пилот идёт на копии модели и с сохранением перед запуском. Отключить надстройку можно, не удаляя её: через (Admin) Add-Ins Manager или убрав манифест. <a class="sn" href="#s-deploy" aria-label="Источник 1">[1]</a><a class="sn" href="#s-admin" aria-label="Источник 12">[12]</a></p>
+<h3>Затронет ли это центральную модель?</h3>
+<p>Через обычную синхронизацию: то, что делает надстройка, — обычные изменения модели в вашем сеансе Revit. <a class="sn" href="#s-collab" aria-label="Источник 16">[16]</a><a class="sn" href="#s-rserver" aria-label="Источник 17">[17]</a><a class="sn" href="#s-cloud" aria-label="Источник 18">[18]</a> Отдельного канала к серверу у надстройки нет. Кроме правок, в модели появляются параметры надстройки — см. «Что надстройка добавляет в модель».</p>
+<h3>Что видят коллеги, у которых надстройки нет?</h3>
+<p>Значения в параметрах модели. Пересчитать без надстройки они не смогут. Как ведёт себя такая модель на машине без надстройки, в документации Autodesk подробно не описано — <span class="b vt">проверим на пилоте</span>.</p>
+<h3>Какие версии Revit поддерживаются?</h3>
+<p>Revit 2024–2027. Под каждую версию своя версия библиотеки, установщик ставит нужную. Revit LT надстройки не поддерживает. <a class="sn" href="#s-lt" aria-label="Источник 10">[10]</a><a class="sn" href="#s-net8" aria-label="Источник 5">[5]</a><a class="sn" href="#s-req27" aria-label="Источник 6">[6]</a></p>
+</section>
+
+<section id="pilot" class="pilot" aria-labelledby="h-pl">
+<h2 id="h-pl">Пилот вместе с ИТ</h2>
+<ol>
+<li><b>Показать администратору эту страницу и памятку.</b>Памятка — PDF на две страницы, ниже.</li>
+<li><b>ИТ ставит на одно рабочее место.</b>Или на тестовый компьютер или виртуальную машину, которую выделит ИТ. Способ — тот, что подходит вашему варианту (A–D).</li>
+<li><b>Проверка на копии модели.</b>Копия — с разрешения руководителя проекта и по правилам предприятия; рабочие модели не трогаем.</li>
+<li><b>Решение.</b>Вместе решаем, как ставить дальше.</li>
+</ol>
+<h3>Что проверим на пилоте</h3>
+<ul class="spisok-x">
+<li>Revit 2027: подхватывается ли манифест из <code>C:\Program Files\Autodesk\Revit\Addins\2027</code> (папку нужно создать); подписанная и неподписанная надстройка.</li>
+<li>Revit 2026.5 и позже: что меняется для надстроек в связи с .NET 10.</li>
+<li>Загрузка с сетевого пути <code>\\server\share\…</code> в Revit 2025–2027 в документации Autodesk не описана. Мы копируем файлы локально и сетевой путь не используем; проверим, только если вашей схеме нужна общая папка. <a class="sn" href="#s-unc" aria-label="Источник 25">[25]</a></li>
+<li>Подписанная надстройка с заранее разосланным сертификатом: исчезает ли окно безопасности и в какое хранилище класть сертификат.</li>
+<li>Работает ли «всегда включена» в (Admin) Add-Ins Manager как замена окна безопасности.</li>
+<li>Включена ли на рабочих станциях проверка DLL в AppLocker или Dynamic Code Security в App Control; если да — какое правило нужно для папки, откуда берётся библиотека.</li>
+<li>Citrix и RDS: где лежат манифест и библиотека; размер перемещаемого профиля.</li>
+</ul>
+<p class="knr"><a class="kn" href="pult-ovik-dlya-administratora.pdf" target="_blank" rel="noopener">Памятка для администратора (PDF)</a><a class="kn vtor" href="../paket/">← Пакет для инженера</a></p>
+</section>
+
+<section id="slovarik" aria-labelledby="h-sl">
+<h2 id="h-sl">Словарик</h2>
+<dl class="gloss"><dt>SCCM (Microsoft Configuration Manager), Intune</dt><dd>системы, которыми ИТ раздаёт программы на компьютеры предприятия.</dd><dt>MSI</dt><dd>стандартный установочный пакет Windows; ставится тихо, без окон.</dd><dt>Библиотека (DLL)</dt><dd>файл с программным кодом надстройки. В тексте страницы — только «библиотека».</dd><dt>Манифест .addin</dt><dd>короткий файл, по которому Revit находит надстройку при запуске.</dd><dt>RDS, VDI, Citrix</dt><dd>способы запускать программы на сервере и показывать пользователю только экран.</dd><dt>Метка времени</dt><dd>отметка времени подписания: подпись остаётся действительной и после окончания срока сертификата.</dd><dt>AppLocker, App Control (WDAC)</dt><dd>политики Windows, которые разрешают запуск только одобренных программ и библиотек.</dd><dt>Dynamic Code Security</dt><dd>параметр App Control: политика применяется и к библиотекам, которые загружает .NET.</dd><dt>ADSK</dt><dd>широко используемый в российских проектах набор общих параметров Revit.</dd></dl>
+</section>
+
+<section id="istochniki" class="src" aria-labelledby="h-is">
+<h2 id="h-is">Источники</h2>
+<p class="lid">Дата проверки — 30.09.2026. Помечено, чья это документация: Autodesk или другой источник (Microsoft, разработчики надстроек, форумы).</p>
+<ol><li id="s-deploy"><span class="n">[1]</span><span><span class="k">документация Autodesk</span><a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-API/files/Revit_API_Developers_Guide/Introduction/Getting_Started/Using_the_Autodesk_Revit_API/Revit_API_Revit_API_Developers_Guide_Introduction_Getting_Started_Using_the_Autodesk_Revit_API_Deployment_Options_html.html" target="_blank" rel="noopener">Revit API: «Deployment Options» — надстройка это DLL внутри процесса Revit</a></span></li><li id="s-reg27"><span class="n">[2]</span><span><span class="k">документация Autodesk</span><a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-API/files/Revit_API_Developers_Guide/Introduction/Add_In_Integration/Revit_API_Revit_API_Developers_Guide_Introduction_Add_In_Integration_Add_in_Registration_html.html" target="_blank" rel="noopener">Revit API 2027: «Add-in Registration» — манифест .addin и папки</a></span></li><li id="s-reg26"><span class="n">[3]</span><span><span class="k">документация Autodesk</span><a href="https://help.autodesk.com/cloudhelp/2026/ENU/Revit-API/files/Revit_API_Developers_Guide/Introduction/Add_In_Integration/Revit_API_Revit_API_Developers_Guide_Introduction_Add_In_Integration_Add_in_Registration_html.html" target="_blank" rel="noopener">Revit API 2026: «Add-in Registration»</a></span></li><li id="s-sdk27"><span class="n">[4]</span><span><span class="k">документация Autodesk</span><a href="https://blog.autodesk.io/revit-2027-sdk-net-10-api-changes-and-additions/" target="_blank" rel="noopener">Блог разработчиков Autodesk: «Revit 2027 SDK: .NET 10, API Changes and Additions» — новая общая папка в Program Files</a></span></li><li id="s-net8"><span class="n">[5]</span><span><span class="k">документация Autodesk</span><a href="https://blog.autodesk.io/migrating-from-net-48-to-net-core-8/" target="_blank" rel="noopener">Блог разработчиков Autodesk: переход с .NET 4.8 на .NET 8 (Revit 2025)</a></span></li><li id="s-req27"><span class="n">[6]</span><span><span class="k">документация Autodesk</span><a href="https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/System-requirements-for-Revit-2027-products.html" target="_blank" rel="noopener">Системные требования Revit 2027 (.NET 10, Windows 11; таблицы Citrix и VMware отсутствуют)</a></span></li><li id="s-req24"><span class="n">[7]</span><span><span class="k">документация Autodesk</span><a href="https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/System-requirements-for-Revit-2024-products.html" target="_blank" rel="noopener">Системные требования Revit 2024 (таблицы Citrix и VMware Horizon есть)</a></span></li><li id="s-req25g"><span class="n">[8]</span><span><span class="k d">другой источник</span><a href="https://graitec.com/us/blog/system-requirements-for-autodesk-revit-2025-products/" target="_blank" rel="noopener">Graitec (партнёр Autodesk): копия системных требований Revit 2025 с таблицами Citrix и VMware</a></span></li><li id="s-req26"><span class="n">[9]</span><span><span class="k">документация Autodesk</span><a href="https://www.autodesk.com/support/technical/article/caas/sfdcarticles/sfdcarticles/System-requirements-for-Revit-2026-products.html" target="_blank" rel="noopener">Системные требования Revit 2026 (.NET 8; в требованиях есть примечание про версии 2026.5 и позже; таблицы Citrix и VMware отсутствуют)</a></span></li><li id="s-lt"><span class="n">[10]</span><span><span class="k">документация Autodesk</span><a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-Installation/files/GUID-B51E757E-CEC1-48D8-B188-BF20EE19FC99.htm" target="_blank" rel="noopener">Справка Revit 2027, «About Add-Ins»: Revit LT надстройки не поддерживает</a></span></li><li id="s-ext"><span class="n">[11]</span><span><span class="k">документация Autodesk</span><a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-Installation/files/GUID-B073BC17-DA39-41C5-9458-AE79E96632A8.htm" target="_blank" rel="noopener">Справка по развёртыванию, шаг «Extensions»: сторонние надстройки в образ не включаются, их раздают SCCM / Configuration Manager</a></span></li><li id="s-admin"><span class="n">[12]</span><span><span class="k">документация Autodesk</span><a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-Installation/files/GUID-EB1DBBC4-1802-4D0A-B244-2D72EAA36DF0.htm" target="_blank" rel="noopener">Справка Revit 2027: (Admin) Add-Ins Manager</a></span></li><li id="s-unsigned"><span class="n">[13]</span><span><span class="k">документация Autodesk</span><a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-Troubleshooting/files/GUID-36D29367-A540-4CFD-9773-4995BF1DF08A.htm" target="_blank" rel="noopener">Справка Revit 2027: «Security: Unsigned File or Add-In» — окно с тремя вариантами</a></span></li><li id="s-signed"><span class="n">[14]</span><span><span class="k">документация Autodesk</span><a href="https://help.autodesk.com/cloudhelp/2027/ENU/Revit-Troubleshooting/files/GUID-900A3EBF-A809-4A0E-96ED-5EEC965A2728.htm" target="_blank" rel="noopener">Справка Revit 2027: окно для надстройки с цифровой подписью</a></span></li><li id="s-signing"><span class="n">[15]</span><span><span class="k">документация Autodesk</span><a href="https://help.autodesk.com/cloudhelp/2024/ENU/Revit-API/files/Revit_API_Developers_Guide/Introduction/Add_In_Integration/Revit_API_Revit_API_Developers_Guide_Introduction_Add_In_Integration_Digitally_Signing_Your_Revit_Add_in_html.html" target="_blank" rel="noopener">Руководство разработчика: «Digitally Signing Your Revit Add-in» (подпись, метка времени)</a></span></li><li id="s-collab"><span class="n">[16]</span><span><span class="k">документация Autodesk</span><a href="https://help.autodesk.com/cloudhelp/2026/ENU/Revit-Collaborate/files/GUID-32A10F90-31F8-49CB-A63A-7060B3C99A99.htm" target="_blank" rel="noopener">Справка Revit: совместная работа, локальная копия и синхронизация с центральной моделью</a></span></li><li id="s-rserver"><span class="n">[17]</span><span><span class="k">документация Autodesk</span><a href="https://help.autodesk.com/cloudhelp/2023/ENU/Revit-Collaborate/files/GUID-BBAB038E-5DA1-4C7D-B013-39E82EC8B705.htm" target="_blank" rel="noopener">Справка Revit: Revit Server (центральная модель на узле Host, локальная копия у пользователя)</a></span></li><li id="s-cloud"><span class="n">[18]</span><span><span class="k">документация Autodesk</span><a href="https://help.autodesk.com/cloudhelp/2026/ENU/Revit-Cloud/files/GUID-9C74D6BC-2FBD-40B0-A27B-CDC766D35675.htm" target="_blank" rel="noopener">Справка Revit: облачная работа, локальный кэш и синхронизация</a></span></li><li id="s-citrix"><span class="n">[19]</span><span><span class="k">документация Autodesk</span><a href="https://help.autodesk.com/cloudhelp/2026/ENU/Revit-Installation/files/GUID-D5EC7E5E-C37B-4374-B26B-952F87EF55E2.htm" target="_blank" rel="noopener">Справка Revit: «Configuring Autodesk Revit for Citrix»</a></span></li><li id="s-tbc"><span class="n">[20]</span><span><span class="k d">другой источник</span><a href="https://jeremytammik.github.io/tbc/a/1462_trust_sign_2017_update.html" target="_blank" rel="noopener">Building Coder (сотрудник Autodesk, личный блог): подписанная надстройка и сертификат, разосланный на компьютеры</a></span></li><li id="s-msiexec"><span class="n">[21]</span><span><span class="k d">другой источник</span><a href="https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/msiexec" target="_blank" rel="noopener">Microsoft Learn: msiexec, тихая установка MSI</a></span></li><li id="s-applocker"><span class="n">[22]</span><span><span class="k d">другой источник</span><a href="https://learn.microsoft.com/en-us/windows/security/application-security/application-control/app-control-for-business/applocker/dll-rules-in-applocker" target="_blank" rel="noopener">Microsoft Learn: правила DLL в AppLocker (по умолчанию пускают %programfiles% и %windir%)</a></span></li><li id="s-appcontrol"><span class="n">[23]</span><span><span class="k d">другой источник</span><a href="https://learn.microsoft.com/en-us/windows/security/application-security/application-control/app-control-for-business/design/appcontrol-and-dotnet" target="_blank" rel="noopener">Microsoft Learn: App Control for Business и .NET (Dynamic Code Security)</a></span></li><li id="s-stamp"><span class="n">[24]</span><span><span class="k d">другой источник</span><a href="https://learn.microsoft.com/en-us/windows/win32/seccrypto/time-stamping-authenticode-signatures" target="_blank" rel="noopener">Microsoft Learn: метки времени Authenticode</a></span></li><li id="s-unc"><span class="n">[25]</span><span><span class="k d">другой источник</span><a href="https://learn.microsoft.com/en-us/dotnet/framework/configure-apps/file-schema/runtime/loadfromremotesources-element" target="_blank" rel="noopener">Microsoft Learn: loadFromRemoteSources (.NET Framework, сетевые пути)</a></span></li><li id="s-forum27"><span class="n">[26]</span><span><span class="k d">другой источник</span><a href="https://forums.autodesk.com/t5/revit-api-forum/revit-2027-add-in-installation-folder-changes/td-p/14102410" target="_blank" rel="noopener">Форум Autodesk: «Revit 2027 Add-in Installation folder changes»</a></span></li><li id="s-bimcat"><span class="n">[27]</span><span><span class="k d">другой источник</span><a href="https://docs.bimcat.org/tips-and-tricks/administrative-installation" target="_blank" rel="noopener">Документация bimCAT: административная установка (манифест в общую папку, файлы в Program Files)</a></span></li><li id="s-pyrevit"><span class="n">[28]</span><span><span class="k d">другой источник</span><a href="https://github.com/pyrevitlabs/pyRevit/issues/771" target="_blank" rel="noopener">pyRevit на GitHub: установка «для администратора» и скрипт SCCM</a></span></li><li id="s-modplus"><span class="n">[29]</span><span><span class="k d">другой источник</span><a href="https://modplus.org/en/help/offlineinstaller" target="_blank" rel="noopener">ModPlus: офлайн-установщик MSI и тихая установка</a></span></li><li id="s-hypar"><span class="n">[30]</span><span><span class="k d">другой источник</span><a href="https://docs.hypar.io/plans-account-and-admin/revit-add-in:-deployment-and-configuration" target="_blank" rel="noopener">Hypar: установка надстройки на пользователя в %APPDATA% без прав администратора</a></span></li><li id="s-ideate"><span class="n">[31]</span><span><span class="k d">другой источник</span><a href="https://support.ideatesoftware.com/support/help/ideate-software-platform/ideate-software-deployment/setting-up-the-deployment-installation" target="_blank" rel="noopener">Ideate Software: MSI и установщик для тихой установки (SCCM, групповая политика)</a></span></li><li id="s-diroots"><span class="n">[32]</span><span><span class="k d">другой источник</span><a href="https://docs.dirootsone.diroots.com/docs/getting-started.html" target="_blank" rel="noopener">DiRoots: установщик с параметрами тихой установки</a></span></li><li id="s-arules"><span class="n">[33]</span><span><span class="k d">другой источник</span><a href="https://learn.microsoft.com/en-us/windows/security/application-security/application-control/windows-defender-application-control/applocker/working-with-applocker-rules" target="_blank" rel="noopener">Microsoft Learn: типы правил AppLocker (издатель, путь, хэш)</a></span></li><li id="s-suppl"><span class="n">[34]</span><span><span class="k d">другой источник</span><a href="https://learn.microsoft.com/en-us/windows/security/application-security/application-control/app-control-for-business/design/appcontrol-wizard-create-supplemental-policy" target="_blank" rel="noopener">Microsoft Learn: дополнительные (supplemental) политики App Control</a></span></li><li id="s-pyrevit3034"><span class="n">[35]</span><span><span class="k d">другой источник</span><a href="https://github.com/pyrevitlabs/pyRevit/pull/3034" target="_blank" rel="noopener">pyRevit на GitHub: запись в Program Files требует прав администратора</a></span></li></ol>
+</section>
+</main>
+<footer class="podval"><div class="wrap"><p>Надстройка ещё не выпущена: описан проект установки. Revit — продукт Autodesk. Дата: 30.09.2026</p><p><a href="../paket/">← Пакет для инженера</a> · <a href="https://lordrubano.github.io/revit-ovik-vitrina/" target="_blank" rel="noopener">Все материалы витрины</a></p></div></footer>
+</body>
+</html>
